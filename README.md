@@ -19,3 +19,36 @@ Download the feature build which is based on Unity 5.5
 http://beta.unity3d.com/download/9f4c055d6ef4/public_download.html
 
 add the folder `Assets/NavMeshComponents` of this repository to your project.
+
+# FAQ
+
+Q: Can I bake navmesh at runtime?  
+A: yes
+
+Q: Can I use navmesh'es for more than one agent size?  
+A: yes
+
+Q: Can I put a navmesh in a prefab?  
+A: yes - with some limitiations.
+
+Q: How do i connect two navmesh surfaces?  
+A: Use the NavMeshLink to connect the two sides
+
+Q: How do i query the navmesh for one specific size of agent?  
+A: Use the NavMeshQuery filter when querying the navmesh
+
+Q: What's the deal with the 'DefaultExecutionOrder' attribute?  
+A: It gives a way of controlling the order of execution of scripts - specifically it allows us to build a navmesh before the
+(native) navmeshagent component is enabled.
+
+Q: What's the use of the new delegate 'NavMesh.onPreUpdate'?  
+A: It allows you to hook in to controlling the navmesh data and links set up before the navigation update loop is called on the native side.
+
+Q: Can I do moving NavMesh platforms?  
+A: No - new API is required for consistently moving platforms carrying agents.
+
+Q: Is OffMeshLink now obsolete?  
+A: No - you can still use OffMeshLink - however you'll find that NavMeshLink is more flexible and have less overhead.
+
+Q: What happened to HeightMesh and Auto Generated OffMeshLinks?  
+A: They're not supported in the new navmesh building feature. HeightMesh will be added at some point. Auto OffMeshLink generation will possibly be replaced with a solution that allows better control of placement.
