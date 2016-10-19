@@ -1,4 +1,4 @@
-# High Level API Components for Runtime NavMesh Building
+# High Level Components for Runtime NavMesh Building
 
 Here we introduce four high level components for the navigation system:
 
@@ -18,7 +18,9 @@ Download the feature build which is based on Unity 5.5
 
 http://beta.unity3d.com/download/9f4c055d6ef4/public_download.html
 
-add the folder `Assets/NavMeshComponents` of this repository to your project.
+Add the folder `Assets/NavMeshComponents` of this repository to your project.
+
+Note: Documentation of the low-level API to support these components are work in progress.
 
 # FAQ
 
