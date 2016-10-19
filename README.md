@@ -12,6 +12,8 @@ These components comprise the high level controls for building and using NavMesh
 Further Documentation (draft) :
 https://docs.google.com/document/d/1usMrwMHTPNBFyT1hZRt-nQZzRDTciIQRVzmA7MQsFNw
 
+Note: Documentation of the low-level API to support these components are work in progress.
+
 # How To Get Started
 
 Download the feature build which is based on Unity 5.5
@@ -19,8 +21,6 @@ Download the feature build which is based on Unity 5.5
 http://beta.unity3d.com/download/9f4c055d6ef4/public_download.html
 
 Add the folder `Assets/NavMeshComponents` of this repository to your project.
-
-Note: Documentation of the low-level API to support these components are work in progress.
 
 # FAQ
 
