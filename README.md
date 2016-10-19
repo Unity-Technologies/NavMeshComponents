@@ -18,7 +18,7 @@ Note: Documentation of the low-level API to support these components are work in
 
 Download the feature build which is based on Unity 5.5
 
-http://beta.unity3d.com/download/9f4c055d6ef4/public_download.html
+http://beta.unity3d.com/download/98b817aefff4/public_download.html
 
 Add the folder `Assets/NavMeshComponents` of this repository to your project.
 
