@@ -9,10 +9,13 @@ Here we introduce four high level components for the navigation system:
 
 These components comprise the high level controls for building and using NavMeshes at runtime as well as edit time.
 
-Further Documentation (draft) :
+### Further Documentation (draft)
+
+High Level Components:  
 https://docs.google.com/document/d/1usMrwMHTPNBFyT1hZRt-nQZzRDTciIQRVzmA7MQsFNw
 
-Note: Documentation of the low-level API to support these components are work in progress.
+Low Level API:  
+https://docs.google.com/document/d/1g1KE59K7HQq25kAMxweRt5ePXkEMvgNnAU3zfX_R7m8
 
 # How To Get Started
 
