@@ -23,7 +23,10 @@ Download the feature build which is based on Unity 5.5
 
 http://beta.unity3d.com/download/98b817aefff4/public_download.html
 
-Add the folder `Assets/NavMeshComponents` of this repository to your project.
+Clone or download this repository and open the project using the feature build.
+Alternatively, you can copy the contents of `Assets/` to an existing project.
+
+_Note: the Unity build above is an experimental feature build, features and API is subject to change_ 
 
 # FAQ
 
