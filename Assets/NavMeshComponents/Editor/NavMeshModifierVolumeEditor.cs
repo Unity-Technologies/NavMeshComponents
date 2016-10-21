@@ -66,7 +66,7 @@ namespace UnityEditor.AI
             Gizmos.matrix = oldMatrix;
             Gizmos.color = oldColor;
 
-            Gizmos.DrawIcon (navModifier.transform.position, "NavMeshModifierVolume Gizmo", true);
+            Gizmos.DrawIcon (navModifier.transform.position, "NavMeshModifierVolume Icon", true);
         }
 
         [DrawGizmo (GizmoType.NotInSelectionHierarchy | GizmoType.Pickable)]
@@ -90,7 +90,7 @@ namespace UnityEditor.AI
                 Gizmos.color = oldColor;
             }
 
-            Gizmos.DrawIcon (navModifier.transform.position, "NavMeshModifierVolume Gizmo", true);
+            Gizmos.DrawIcon (navModifier.transform.position, "NavMeshModifierVolume Icon", true);
         }
 
         [MenuItem ("GameObject/AI/NavMesh Modifier Volume", false, 2001)]

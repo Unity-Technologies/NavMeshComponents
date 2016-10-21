@@ -380,7 +380,7 @@ namespace UnityEditor.AI
             if (NavMeshVisualizationSettings.showNavigation > 0)
                 RenderBoxGizmo(navSurface, gizmoType, false);
             else
-                Gizmos.DrawIcon(navSurface.transform.position, "NavMeshSurface Gizmo", true);
+                Gizmos.DrawIcon(navSurface.transform.position, "NavMeshSurface Icon", true);
         }
 
         static void RenderBoxGizmo(NavMeshSurface navSurface, GizmoType gizmoType, bool selected)
@@ -427,7 +427,7 @@ namespace UnityEditor.AI
                 Gizmos.DrawCube(s_DebugVisualization.focusPoint, new Vector3(0.1f, 0.1f, 0.1f));
             }
 
-            Gizmos.DrawIcon(navSurface.transform.position, "NavMeshSurface Gizmo", true);
+            Gizmos.DrawIcon(navSurface.transform.position, "NavMeshSurface Icon", true);
         }
 
         public void OnSceneGUI()

@@ -137,7 +137,7 @@ namespace UnityEditor.AI
             Gizmos.matrix = oldMatrix;
             Gizmos.color = oldColor;
 
-            Gizmos.DrawIcon (navLink.transform.position, "NavMeshLink Gizmo", true);
+            Gizmos.DrawIcon (navLink.transform.position, "NavMeshLink Icon", true);
         }
 
         [DrawGizmo (GizmoType.NotInSelectionHierarchy | GizmoType.Pickable)]
@@ -161,7 +161,7 @@ namespace UnityEditor.AI
                 Gizmos.color = oldColor;
             }
 
-            Gizmos.DrawIcon (navLink.transform.position, "NavMeshLink Gizmo", true);
+            Gizmos.DrawIcon (navLink.transform.position, "NavMeshLink Icon", true);
         }
 
         public void OnSceneGUI()
