@@ -120,9 +120,9 @@ namespace UnityEditor.AI
 
         void ApplyIfPrefab(NavMeshSurface navSurface)
         {
-            var prefabParent = PrefabUtility.GetPrefabParent(navSurface.gameObject);
-            if (prefabParent)
+            if (PrefabUtility.GetPrefabType(navSurface.gameObject) == PrefabType.PrefabInstance)
             {
+                var prefabParent = PrefabUtility.GetPrefabParent(navSurface.gameObject);
                 PrefabUtility.ReplacePrefab(navSurface.gameObject, prefabParent, ReplacePrefabOptions.ConnectToPrefab);
             }
         }
