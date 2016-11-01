@@ -19,14 +19,14 @@ https://docs.google.com/document/d/1g1KE59K7HQq25kAMxweRt5ePXkEMvgNnAU3zfX_R7m8
 
 # How To Get Started
 
-Download the feature build which is based on Unity 5.5
+Download the feature build which is based on Unity 5.5.0b11
 
 http://beta.unity3d.com/download/701843f9b69e/public_download.html
 
 Clone or download this repository and open the project using the feature build.
 Alternatively, you can copy the contents of `Assets/` to an existing project.
 
-_Note: the Unity build above is an experimental feature build, features and API is subject to change_ 
+_Note: the Unity build above is an experimental feature build, features and API is subject to change. **Make sure to backup an existing project before opening it with this build**_.
 
 # FAQ
 
