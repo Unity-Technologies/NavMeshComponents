@@ -21,7 +21,7 @@ https://docs.google.com/document/d/1g1KE59K7HQq25kAMxweRt5ePXkEMvgNnAU3zfX_R7m8
 
 Download the feature build which is based on Unity 5.5
 
-http://beta.unity3d.com/download/98b817aefff4/public_download.html
+http://beta.unity3d.com/download/701843f9b69e/public_download.html
 
 Clone or download this repository and open the project using the feature build.
 Alternatively, you can copy the contents of `Assets/` to an existing project.

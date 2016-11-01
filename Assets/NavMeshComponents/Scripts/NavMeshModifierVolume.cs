@@ -2,8 +2,9 @@ using System.Collections.Generic;
 
 namespace UnityEngine.AI
 {
-    [AddComponentMenu ("Navigation/NavMeshModifierVolume", 31)]
     [ExecuteInEditMode]
+    [AddComponentMenu("Navigation/NavMeshModifierVolume", 31)]
+    [HelpURL("https://github.com/Unity-Technologies/NavMeshComponents#further-documentation-draft")]
     public class NavMeshModifierVolume : MonoBehaviour
     {
         [SerializeField]

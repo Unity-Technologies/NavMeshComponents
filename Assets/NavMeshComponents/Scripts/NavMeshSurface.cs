@@ -9,9 +9,10 @@ namespace UnityEngine.AI
         Children = 2,
     }
 
-    [AddComponentMenu("Navigation/NavMeshSurface", 30)]
     [ExecuteInEditMode]
     [DefaultExecutionOrder(-102)]
+    [AddComponentMenu("Navigation/NavMeshSurface", 30)]
+    [HelpURL("https://github.com/Unity-Technologies/NavMeshComponents#further-documentation-draft")]
     public class NavMeshSurface : MonoBehaviour
     {
         [SerializeField]
@@ -73,12 +74,10 @@ namespace UnityEngine.AI
         NavMeshData m_BakedNavMeshData;
         public NavMeshData bakedNavMeshData { get { return m_BakedNavMeshData; } set { m_BakedNavMeshData = value; } }
 
-        // Do not serialize.
-        NavMeshDataInstance m_NavMeshDataInstance = new NavMeshDataInstance();
-
+        // Do not serialize - runtime only state.
+        NavMeshDataInstance m_NavMeshDataInstance;
         Vector3 m_LastPosition = Vector3.zero;
         Quaternion m_LastRotation = Quaternion.identity;
-        Vector3 m_LastScale = Vector3.one;
 
         static readonly List<NavMeshSurface> s_NavMeshSurfaces = new List<NavMeshSurface>();
 
@@ -90,18 +89,6 @@ namespace UnityEngine.AI
         void OnEnable()
         {
             Register(this);
-
-            // Workaround: Make sure we have unique navmesh data, if not, delete reference to the data.
-            // HasUniqueNavMeshData () assumes that the original copy got registered before us.
-            if (!HasUniqueNavMeshData())
-            {
-                if (m_BakedNavMeshData != null)
-                {
-                    Debug.LogWarning("Duplicating NavMeshSurface does not duplicate the referenced navmesh data");
-                    m_BakedNavMeshData = null;
-                }
-            }
-
             AddData();
         }
 
@@ -124,12 +111,12 @@ namespace UnityEngine.AI
 
             m_LastPosition = transform.position;
             m_LastRotation = transform.rotation;
-            m_LastScale = transform.lossyScale;
         }
 
         public void RemoveData()
         {
             m_NavMeshDataInstance.Remove();
+            m_NavMeshDataInstance = new NavMeshDataInstance();
         }
 
         public NavMeshBuildSettings GetBuildSettings()
@@ -199,17 +186,6 @@ namespace UnityEngine.AI
         {
             for (var i = 0; i < s_NavMeshSurfaces.Count; ++i)
                 s_NavMeshSurfaces[i].UpdateDataIfTransformChanged();
-        }
-
-        bool HasUniqueNavMeshData()
-        {
-            for (var i = 0; i < s_NavMeshSurfaces.Count; ++i)
-            {
-                var surface = s_NavMeshSurfaces[i];
-                if (surface != this && surface.m_BakedNavMeshData == m_BakedNavMeshData)
-                    return false;
-            }
-            return true;
         }
 
         void AppendModifierVolumes(ref List<NavMeshBuildSource> sources)
@@ -354,7 +330,6 @@ namespace UnityEngine.AI
         {
             if (m_LastPosition != transform.position) return true;
             if (m_LastRotation != transform.rotation) return true;
-            if (m_LastScale != transform.lossyScale) return true;
             return false;
         }
 
@@ -368,10 +343,36 @@ namespace UnityEngine.AI
         }
 
 #if UNITY_EDITOR
+        bool UnshareNavMeshAsset()
+        {
+            // Nothing to unshare
+            if (m_BakedNavMeshData == null)
+                return false;
+
+            // Prefabs can share asset reference
+            var prefab = UnityEditor.PrefabUtility.GetPrefabObject(this);
+            if (prefab != null)
+                return false;
+
+            // Don't allow referencing an asset that's assigned to another surface
+            for (var i = 0; i < s_NavMeshSurfaces.Count; ++i)
+            {
+                var surface = s_NavMeshSurfaces[i];
+                if (surface != this && surface.m_BakedNavMeshData == m_BakedNavMeshData)
+                    return true;
+            }
+
+            // asset is not referenced by known surfaces
+            return false;
+        }
+
         void OnValidate()
         {
-            if (!s_NavMeshSurfaces.Contains(this))
-                return;
+            if (UnshareNavMeshAsset())
+            {
+                Debug.LogWarning("Duplicating NavMeshSurface does not duplicate the referenced navmesh data");
+                m_BakedNavMeshData = null;
+            }
 
             var settings = NavMesh.GetSettingsByID(m_AgentTypeID);
             if (settings.agentTypeID != -1)

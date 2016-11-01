@@ -2,9 +2,10 @@ using System.Collections.Generic;
 
 namespace UnityEngine.AI
 {
-    [AddComponentMenu("Navigation/NavMeshLink", 33)]
     [ExecuteInEditMode]
     [DefaultExecutionOrder(-101)]
+    [AddComponentMenu("Navigation/NavMeshLink", 33)]
+    [HelpURL("https://github.com/Unity-Technologies/NavMeshComponents#further-documentation-draft")]
     public class NavMeshLink : MonoBehaviour
     {
         [SerializeField]
@@ -39,7 +40,6 @@ namespace UnityEngine.AI
 
         Vector3 m_LastPosition = Vector3.zero;
         Quaternion m_LastRotation = Quaternion.identity;
-        Vector3 m_LastScale = Vector3.one;
 
         static readonly List<NavMeshLink> s_Tracked = new List<NavMeshLink>();
 
@@ -108,28 +108,25 @@ namespace UnityEngine.AI
 #endif
 
             var link = new NavMeshLinkData();
-            link.startPosition = transform.TransformPoint(m_StartPoint);
-            link.endPosition = transform.TransformPoint(m_EndPoint);
+            link.startPosition = m_StartPoint;
+            link.endPosition = m_EndPoint;
             link.width = m_Width;
-            link.upAxis = transform.up;
             link.costModifier = -1.0f;
             link.bidirectional = m_Bidirectional;
             link.area = m_Area;
             link.agentTypeID = m_AgentTypeID;
-            m_LinkInstance = NavMesh.AddLink(link);
+            m_LinkInstance = NavMesh.AddLink(link, transform.position, transform.rotation);
             if (m_LinkInstance.valid)
                 m_LinkInstance.owner = this;
 
             m_LastPosition = transform.position;
             m_LastRotation = transform.rotation;
-            m_LastScale = transform.lossyScale;
         }
 
         bool HasTransformChanged()
         {
             if (m_LastPosition != transform.position) return true;
             if (m_LastRotation != transform.rotation) return true;
-            if (m_LastScale != transform.lossyScale) return true;
             return false;
         }
 

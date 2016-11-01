@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor.SceneManagement;
 using UnityEngine.AI;
 using UnityEngine;
+using System.Linq;
 
 namespace UnityEditor.AI
 {
@@ -68,10 +69,10 @@ namespace UnityEditor.AI
             NavMeshVisualizationSettings.showNavigation--;
         }
 
-        static string GetAndEnsureTargetPath(NavMeshSurfaceEditor instance)
+        static string GetAndEnsureTargetPath(NavMeshSurface surface)
         {
             // Create directory for the asset if it does not exist yet.
-            var activeScenePath = EditorSceneManager.GetActiveScene().path;
+            var activeScenePath = surface.gameObject.scene.path;
 
             var targetPath = "Assets";
             if (!string.IsNullOrEmpty(activeScenePath))
@@ -81,54 +82,14 @@ namespace UnityEditor.AI
             return targetPath;
         }
 
-        void SaveCombinedAsset()
+        void SaveNavMeshAsset(NavMeshSurface surface)
         {
-            // Create an asset describing all surfaces.
-            var targetPath = GetAndEnsureTargetPath(this);
-            var combinedAssetData = new List<NavMeshData>();
+            var targetPath = GetAndEnsureTargetPath(surface);
 
-            // Collect valid navmesh data.
-            foreach (var s in NavMeshSurface.activeSurfaces)
-            {
-                if (s.bakedNavMeshData != null)
-                {
-                    combinedAssetData.Add(s.bakedNavMeshData);
-                }
-            }
-
-            // Clear the legacy navmesh data reference on the scene
-            if (NavMeshEditorHelpers.CurrentNavMeshAssetFormat() == NavMeshEditorHelpers.NavMeshDataFormat.Single)
-                NavMeshBuilder.ClearAllNavMeshes();
-
-            // Store baked navmesh data in one asset.
-            var combinedAssetPath = Path.Combine(targetPath, "NavMesh.asset");
-
-            if (combinedAssetData.Count == 0)
-            {
-                AssetDatabase.DeleteAsset(combinedAssetPath);
-            }
-            else
-            {
-                if (!File.Exists(combinedAssetPath))
-                {
-                    // NOTE: Creates empty dummy NavMeshData to represent the main asset,
-                    // this is done in order to show all the built meshes equally in the list.
-                    var dummy = new NavMeshData();
-                    AssetDatabase.CreateAsset(dummy, combinedAssetPath);
-                }
-
-                // Only add the data that has not been added already.
-                // Call to NavMeshSurface.Clear () also deletes the data from the asset.
-                foreach (var data in combinedAssetData)
-                {
-                    if (!AssetDatabase.Contains(data))
-                    {
-                        AssetDatabase.AddObjectToAsset(data, combinedAssetPath);
-                    }
-                }
-                AssetDatabase.SaveAssets();
-                AssetDatabase.ImportAsset(combinedAssetPath);
-            }
+            var combinedAssetPath = Path.Combine(targetPath, "NavMesh-" + surface.name + ".asset");
+            combinedAssetPath = AssetDatabase.GenerateUniqueAssetPath(combinedAssetPath);
+            AssetDatabase.CreateAsset(surface.bakedNavMeshData, combinedAssetPath);
+            AssetDatabase.SaveAssets();
         }
 
         void BakeSurface(NavMeshSurface navSurface)
@@ -136,7 +97,9 @@ namespace UnityEditor.AI
             var destroy = navSurface.bakedNavMeshData;
             navSurface.Bake(s_DebugVisualization);
 
-            DestroyImmediate(destroy, true);
+            AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(destroy));
+            SaveNavMeshAsset(navSurface);
+            ApplyIfPrefab(navSurface);
             // Explicitly set the scene as dirty - otherwise the reference will be lost
             EditorSceneManager.MarkSceneDirty(navSurface.gameObject.scene);
         }
@@ -148,9 +111,19 @@ namespace UnityEditor.AI
             navSurface.RemoveData();
             if (destroy)
             {
-                DestroyImmediate(destroy, true);
+                AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(destroy));
+                ApplyIfPrefab(navSurface);
                 // Explicitly set the scene as dirty
                 EditorSceneManager.MarkSceneDirty(navSurface.gameObject.scene);
+            }
+        }
+
+        void ApplyIfPrefab(NavMeshSurface navSurface)
+        {
+            var prefabParent = PrefabUtility.GetPrefabParent(navSurface.gameObject);
+            if (prefabParent)
+            {
+                PrefabUtility.ReplacePrefab(navSurface.gameObject, prefabParent, ReplacePrefabOptions.ConnectToPrefab);
             }
         }
 
@@ -159,10 +132,10 @@ namespace UnityEditor.AI
             if (s_Styles == null)
                 s_Styles = new Styles();
 
-            var isPrefab = PrefabUtility.GetPrefabObject(target) != null;
-            if (isPrefab)
+            var targetsContainPrefab = targets.Any(x => PrefabUtility.GetPrefabType(x) == PrefabType.Prefab);
+            if (targetsContainPrefab)
             {
-                EditorGUILayout.HelpBox("Prefabs are currently not supported", MessageType.Warning);
+                EditorGUILayout.HelpBox ("A Prefab instance is necessary for baking / clearing", MessageType.Warning);
                 return;
             }
 
@@ -330,17 +303,19 @@ namespace UnityEditor.AI
 
             using (new EditorGUI.DisabledScope(Application.isPlaying || m_AgentTypeID.intValue == -1))
             {
+                var targetsContainPrefabInstance = targets.Any(x => PrefabUtility.GetPrefabType(x) == PrefabType.PrefabInstance);
+                if (targetsContainPrefabInstance)
+                {
+                    EditorGUILayout.HelpBox ("Prefab changes are applied when baking / clearing", MessageType.Warning);
+                }
+
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(EditorGUIUtility.labelWidth);
                 if (GUILayout.Button("Clear"))
                 {
-                    if (NavMeshEditorHelpers.AllowToOverwriteExistingData(NavMeshEditorHelpers.NavMeshDataFormat.Nested))
-                    {
-                        foreach (NavMeshSurface s in targets)
-                            ClearSurface(s);
-                        SaveCombinedAsset();
-                        SceneView.RepaintAll();
-                    }
+                    foreach (NavMeshSurface s in targets)
+                        ClearSurface(s);
+                    SceneView.RepaintAll();
                 }
 
                 var allTargetsActive = true;
@@ -355,13 +330,9 @@ namespace UnityEditor.AI
                 GUI.enabled = allTargetsActive;
                 if (GUILayout.Button("Bake"))
                 {
-                    if (NavMeshEditorHelpers.AllowToOverwriteExistingData(NavMeshEditorHelpers.NavMeshDataFormat.Nested))
-                    {
-                        foreach (NavMeshSurface navSurface in targets)
-                            BakeSurface(navSurface);
-                        SaveCombinedAsset();
-                        SceneView.RepaintAll();
-                    }
+                    foreach (NavMeshSurface navSurface in targets)
+                        BakeSurface(navSurface);
+                    SceneView.RepaintAll();
                 }
                 GUI.enabled = true;
                 GUILayout.EndHorizontal();
