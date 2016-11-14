@@ -146,7 +146,7 @@ namespace UnityEngine.AI
             var sources = CollectSources();
 
             // Use unscaled bounds - this differs in behaviour from e.g. collider components.
-            // But is similar to reflection probe - and since navmesh data has no scaling support - it is the right choice here
+            // But is similar to reflection probe - and since navmesh data has no scaling support - it is the right choice here.
             var sourcesBounds = new Bounds(m_Center, Abs(m_Size));
             if (m_CollectObjects == CollectObjects.All || m_CollectObjects == CollectObjects.Children)
             {
@@ -161,7 +161,8 @@ namespace UnityEngine.AI
                 data.name = gameObject.name;
                 RemoveData();
                 m_BakedNavMeshData = data;
-                AddData();
+                if (isActiveAndEnabled)
+                    AddData();
             }
         }
 
@@ -349,9 +350,14 @@ namespace UnityEngine.AI
             if (m_BakedNavMeshData == null)
                 return false;
 
-            // Prefabs can share asset reference
-            var prefab = UnityEditor.PrefabUtility.GetPrefabObject(this);
-            if (prefab != null)
+            // Prefab parent owns the asset reference
+            var prefabType = UnityEditor.PrefabUtility.GetPrefabType(this);
+            if (prefabType == UnityEditor.PrefabType.Prefab)
+                return false;
+
+            // An instance can share asset reference only with its prefab parent
+            var prefab = UnityEditor.PrefabUtility.GetPrefabParent(this) as NavMeshSurface;
+            if (prefab != null && prefab.bakedNavMeshData == bakedNavMeshData)
                 return false;
 
             // Don't allow referencing an asset that's assigned to another surface
@@ -362,7 +368,7 @@ namespace UnityEngine.AI
                     return true;
             }
 
-            // asset is not referenced by known surfaces
+            // Asset is not referenced by known surfaces
             return false;
         }
 
@@ -370,7 +376,7 @@ namespace UnityEngine.AI
         {
             if (UnshareNavMeshAsset())
             {
-                Debug.LogWarning("Duplicating NavMeshSurface does not duplicate the referenced navmesh data");
+                Debug.LogWarning("Duplicating NavMeshSurface does not duplicate the referenced navmesh data", this);
                 m_BakedNavMeshData = null;
             }
 

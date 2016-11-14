@@ -82,48 +82,53 @@ namespace UnityEditor.AI
             return targetPath;
         }
 
-        void SaveNavMeshAsset(NavMeshSurface surface)
+        void CreateNavMeshAsset(NavMeshSurface surface)
         {
             var targetPath = GetAndEnsureTargetPath(surface);
 
             var combinedAssetPath = Path.Combine(targetPath, "NavMesh-" + surface.name + ".asset");
             combinedAssetPath = AssetDatabase.GenerateUniqueAssetPath(combinedAssetPath);
             AssetDatabase.CreateAsset(surface.bakedNavMeshData, combinedAssetPath);
-            AssetDatabase.SaveAssets();
+        }
+
+        NavMeshData GetNavMeshAssetToDelete(NavMeshSurface navSurface)
+        {
+            var prefabType = PrefabUtility.GetPrefabType(navSurface);
+            if (prefabType == PrefabType.PrefabInstance || prefabType == PrefabType.DisconnectedPrefabInstance)
+            {
+                // Don't allow deleting the asset belonging to the prefab parent
+                var parentSurface = PrefabUtility.GetPrefabParent(navSurface) as NavMeshSurface;
+                if (parentSurface && navSurface.bakedNavMeshData == parentSurface.bakedNavMeshData)
+                    return null;
+            }
+            return navSurface.bakedNavMeshData;
         }
 
         void BakeSurface(NavMeshSurface navSurface)
         {
-            var destroy = navSurface.bakedNavMeshData;
+            var assetToDelete = GetNavMeshAssetToDelete(navSurface);
             navSurface.Bake(s_DebugVisualization);
+            EditorUtility.SetDirty(navSurface);
 
-            AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(destroy));
-            SaveNavMeshAsset(navSurface);
-            ApplyIfPrefab(navSurface);
-            // Explicitly set the scene as dirty - otherwise the reference will be lost
+            if (assetToDelete)
+            {
+                AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(assetToDelete));
+            }
+            CreateNavMeshAsset(navSurface);
             EditorSceneManager.MarkSceneDirty(navSurface.gameObject.scene);
         }
 
         void ClearSurface(NavMeshSurface navSurface)
         {
-            // Destroy and remove from disk
-            var destroy = navSurface.bakedNavMeshData;
+            var assetToDelete = GetNavMeshAssetToDelete(navSurface);
             navSurface.RemoveData();
-            if (destroy)
-            {
-                AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(destroy));
-                ApplyIfPrefab(navSurface);
-                // Explicitly set the scene as dirty
-                EditorSceneManager.MarkSceneDirty(navSurface.gameObject.scene);
-            }
-        }
+            navSurface.bakedNavMeshData = null;
+            EditorUtility.SetDirty(navSurface);
 
-        void ApplyIfPrefab(NavMeshSurface navSurface)
-        {
-            if (PrefabUtility.GetPrefabType(navSurface.gameObject) == PrefabType.PrefabInstance)
+            if (assetToDelete)
             {
-                var prefabParent = PrefabUtility.GetPrefabParent(navSurface.gameObject);
-                PrefabUtility.ReplacePrefab(navSurface.gameObject, prefabParent, ReplacePrefabOptions.ConnectToPrefab);
+                AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(assetToDelete));
+                EditorSceneManager.MarkSceneDirty(navSurface.gameObject.scene);
             }
         }
 
@@ -131,13 +136,6 @@ namespace UnityEditor.AI
         {
             if (s_Styles == null)
                 s_Styles = new Styles();
-
-            var targetsContainPrefab = targets.Any(x => PrefabUtility.GetPrefabType(x) == PrefabType.Prefab);
-            if (targetsContainPrefab)
-            {
-                EditorGUILayout.HelpBox ("A Prefab instance is necessary for baking / clearing", MessageType.Warning);
-                return;
-            }
 
             serializedObject.Update();
 
@@ -164,6 +162,8 @@ namespace UnityEditor.AI
 
             EditorGUILayout.PropertyField(m_LayerMask, s_Styles.m_LayerMask);
             EditorGUILayout.PropertyField(m_UseGeometry);
+
+            EditorGUILayout.Space();
 
             EditorGUILayout.Space();
 
@@ -303,12 +303,6 @@ namespace UnityEditor.AI
 
             using (new EditorGUI.DisabledScope(Application.isPlaying || m_AgentTypeID.intValue == -1))
             {
-                var targetsContainPrefabInstance = targets.Any(x => PrefabUtility.GetPrefabType(x) == PrefabType.PrefabInstance);
-                if (targetsContainPrefabInstance)
-                {
-                    EditorGUILayout.HelpBox ("Prefab changes are applied when baking / clearing", MessageType.Warning);
-                }
-
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(EditorGUIUtility.labelWidth);
                 if (GUILayout.Button("Clear"))
@@ -318,23 +312,12 @@ namespace UnityEditor.AI
                     SceneView.RepaintAll();
                 }
 
-                var allTargetsActive = true;
-                foreach (NavMeshSurface surf in targets)
-                {
-                    if (!NavMeshSurface.activeSurfaces.Contains(surf))
-                    {
-                        allTargetsActive = false;
-                        break;
-                    }
-                }
-                GUI.enabled = allTargetsActive;
                 if (GUILayout.Button("Bake"))
                 {
                     foreach (NavMeshSurface navSurface in targets)
                         BakeSurface(navSurface);
                     SceneView.RepaintAll();
                 }
-                GUI.enabled = true;
                 GUILayout.EndHorizontal();
             }
         }
