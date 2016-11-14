@@ -147,6 +147,8 @@ namespace UnityEngine.AI
 #if UNITY_EDITOR
         void OnValidate()
         {
+            m_Width = Mathf.Max(0.0f, m_Width);
+
             if (!m_LinkInstance.valid)
                 return;
 

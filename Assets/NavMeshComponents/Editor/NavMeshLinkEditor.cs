@@ -78,11 +78,20 @@ namespace UnityEditor.AI
 
             EditorGUILayout.PropertyField(m_StartPoint);
             EditorGUILayout.PropertyField(m_EndPoint);
-            EditorGUILayout.PropertyField(m_Width);
-            m_Width.floatValue = Mathf.Max(0.0f, m_Width.floatValue);
+
             GUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUIUtility.labelWidth);
-            if (GUILayout.Button("Align Transform To Points"))
+            if (GUILayout.Button("Swap"))
+            {
+                foreach (NavMeshLink navLink in targets)
+                {
+                    var tmp = navLink.startPoint;
+                    navLink.startPoint = navLink.endPoint;
+                    navLink.endPoint = tmp;
+                }
+                SceneView.RepaintAll();
+            }
+            if (GUILayout.Button("Align Transform"))
             {
                 foreach (NavMeshLink navLink in targets)
                 {
@@ -90,10 +99,12 @@ namespace UnityEditor.AI
                     Undo.RecordObject(navLink, "Align Transform to End Points");
                     AlignTransformToEndPoints(navLink);
                 }
+                SceneView.RepaintAll();
             }
             GUILayout.EndHorizontal();
             EditorGUILayout.Space();
 
+            EditorGUILayout.PropertyField(m_Width);
             EditorGUILayout.PropertyField(m_AutoUpdatePosition);
             EditorGUILayout.PropertyField(m_Bidirectional);
 
@@ -237,7 +248,7 @@ namespace UnityEditor.AI
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(navLink, "Adjust link width");
-                navLink.width = Mathf.Max(0.0f, Vector3.Dot(right, (pos - midPt)) * 2.0f);
+                navLink.width = Mathf.Max(0.0f, 2.0f * Vector3.Dot(right, (pos - midPt)));
             }
 
             EditorGUI.BeginChangeCheck();
@@ -245,7 +256,7 @@ namespace UnityEditor.AI
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(navLink, "Adjust link width");
-                navLink.width = Mathf.Max(0.0f, Vector3.Dot(-right, (pos - midPt)) * 2.0f);
+                navLink.width = Mathf.Max(0.0f, 2.0f * Vector3.Dot(-right, (pos - midPt)));
             }
 
             Handles.color = oldColor;
