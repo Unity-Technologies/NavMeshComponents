@@ -87,7 +87,6 @@ namespace UnityEditor.AI
 			// Contents of the dropdown box.
 			string popupContent = "";
 
-            //TODO: make sure the agents have a deterministic order.
             if(agentMask.hasMultipleDifferentValues)
                 popupContent = "\u2014";
             else
@@ -164,10 +163,7 @@ namespace UnityEditor.AI
             if (agentMask.hasMultipleDifferentValues)
             {
                 agentMask.ClearArray();
-//                agentMask.arraySize = 0;
                 agentMask.serializedObject.ApplyModifiedProperties();
-//                agentMask.serializedObject.SetIsDifferentCacheDirty();
-//                agentMask.serializedObject.Update();
             }
 
             // Find which index this agent type is in the agentMask array.
@@ -209,30 +205,15 @@ namespace UnityEditor.AI
         {
             var agentMask = (SerializedProperty)data;
 
-            Debug.Log("Before setting none  : " + agentMask.arraySize);
-
-            agentMask.serializedObject.SetIsDifferentCacheDirty();
-            agentMask.serializedObject.Update();
-//            agentMask.ClearArray();
-//            agentMask.arraySize = 0;
-
+            // Workaround for bug with clearing arrays of mixed
+            // length on an aggregrated SerializedObject
             foreach (var target in agentMask.serializedObject.targetObjects)
             {
                 var targetProp = new SerializedObject(target).FindProperty(agentMask.propertyPath);
                 targetProp.arraySize = 0;
                 targetProp.serializedObject.ApplyModifiedProperties();
             }
-            agentMask.serializedObject.ApplyModifiedProperties();
             agentMask.serializedObject.SetIsDifferentCacheDirty();
-
-            foreach (var target in agentMask.serializedObject.targetObjects)
-            {
-                var targetProp = new SerializedObject(target).FindProperty(agentMask.propertyPath);
-                Debug.Log("target array size  : " + targetProp.arraySize);
-            }
-
-
-            Debug.Log("setting none  : " + agentMask.arraySize);
         }
 
         static void SetAgentMaskAll(object data)
