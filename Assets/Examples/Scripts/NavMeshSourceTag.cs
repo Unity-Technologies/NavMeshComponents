@@ -47,7 +47,7 @@ public class NavMeshSourceTag : MonoBehaviour {
 
             var s = new NavMeshBuildSource ();
             s.shape = NavMeshBuildSourceShape.Mesh;
-            s.mesh = m;
+            s.sourceObject = m;
             s.transform = mf.transform.localToWorldMatrix;
             s.area = 0;
             sources.Add (s);
@@ -59,7 +59,7 @@ public class NavMeshSourceTag : MonoBehaviour {
 
             var s = new NavMeshBuildSource ();
             s.shape = NavMeshBuildSourceShape.Terrain;
-            s.terrainData = t.terrainData;
+            s.sourceObject = t.terrainData;
             // Terrain system only supports translation - so we pass translation only to back-end
             s.transform = Matrix4x4.TRS (t.transform.position, Quaternion.identity, Vector3.one);
             s.area = 0;

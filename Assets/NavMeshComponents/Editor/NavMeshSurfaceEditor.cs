@@ -39,7 +39,6 @@ namespace UnityEditor.AI
 
         static Styles s_Styles;
 
-        static NavMeshBuildDebugSettings s_DebugVisualization = new NavMeshBuildDebugSettings();
         static bool s_ShowDebugOptions;
 
         static Color s_HandleColor = new Color(127f, 214f, 244f, 100f) / 255;
@@ -107,7 +106,7 @@ namespace UnityEditor.AI
         void BakeSurface(NavMeshSurface navSurface)
         {
             var assetToDelete = GetNavMeshAssetToDelete(navSurface);
-            navSurface.Bake(s_DebugVisualization);
+            navSurface.Bake();
             EditorUtility.SetDirty(navSurface);
 
             if (assetToDelete)
@@ -148,7 +147,7 @@ namespace UnityEditor.AI
                 Rect agentDiagramRect = EditorGUILayout.GetControlRect(false, diagramHeight);
                 NavMeshEditorHelpers.DrawAgentDiagram(agentDiagramRect, bs.agentRadius, bs.agentHeight, bs.agentClimb, bs.agentSlope);
             }
-            NavMeshEditorHelpers.AgentTypePopup("Agent Type", m_AgentTypeID);
+            NavMeshComponentsGUIUtility.AgentTypePopup("Agent Type", m_AgentTypeID);
 
             EditorGUILayout.Space();
 
@@ -172,7 +171,7 @@ namespace UnityEditor.AI
             {
                 EditorGUI.indentLevel++;
 
-                NavMeshEditorHelpers.AreaPopup("Default Area", m_DefaultArea);
+                NavMeshComponentsGUIUtility.AreaPopup("Default Area", m_DefaultArea);
 
                 // Override voxel size.
                 EditorGUILayout.PropertyField(m_OverrideVoxelSize);
@@ -226,39 +225,6 @@ namespace UnityEditor.AI
                     EditorGUILayout.PropertyField(m_BuildHeightMesh);
                 }
 
-                // Debug options
-                s_ShowDebugOptions = GUILayout.Toggle(s_ShowDebugOptions, "Debug", EditorStyles.foldout);
-                if (s_ShowDebugOptions)
-                {
-                    EditorGUI.indentLevel++;
-
-                    s_DebugVisualization.showInputGeom = EditorGUILayout.Toggle(s_Styles.m_ShowInputGeom, s_DebugVisualization.showInputGeom);
-                    s_DebugVisualization.showVoxels = EditorGUILayout.Toggle(s_Styles.m_ShowVoxels, s_DebugVisualization.showVoxels);
-                    s_DebugVisualization.showRegions = EditorGUILayout.Toggle(s_Styles.m_ShowRegions, s_DebugVisualization.showRegions);
-                    s_DebugVisualization.showRawContours = EditorGUILayout.Toggle(s_Styles.m_ShowRawContours, s_DebugVisualization.showRawContours);
-                    s_DebugVisualization.showContours = EditorGUILayout.Toggle(s_Styles.m_ShowContours, s_DebugVisualization.showContours);
-                    s_DebugVisualization.showPolyMesh = EditorGUILayout.Toggle(s_Styles.m_ShowPolyMesh, s_DebugVisualization.showPolyMesh);
-                    s_DebugVisualization.showPolyMeshDetail = EditorGUILayout.Toggle(s_Styles.m_ShowPolyMeshDetail, s_DebugVisualization.showPolyMeshDetail);
-
-                    var useFocus = EditorGUILayout.Toggle(new GUIContent("Use Debug Focus"), s_DebugVisualization.useFocus);
-                    if (useFocus != s_DebugVisualization.useFocus)
-                    {
-                        // Refresh Scene view.
-                        SceneView.RepaintAll();
-                        s_DebugVisualization.useFocus = useFocus;
-                    }
-
-                    if (s_DebugVisualization.useFocus)
-                    {
-                        EditorGUI.indentLevel++;
-                        s_DebugVisualization.focusPoint = EditorGUILayout.Vector3Field(new GUIContent("Focus Point"), s_DebugVisualization.focusPoint);
-                        EditorGUI.indentLevel--;
-                    }
-
-                    EditorGUILayout.HelpBox("Debug options will show various visualizations of the build process. The visualization are created when bake is pressed and shown at the location of the bake, and are not stored to disk.", MessageType.None);
-
-                    EditorGUI.indentLevel--;
-                }
                 EditorGUILayout.Space();
                 EditorGUI.indentLevel--;
             }
@@ -375,32 +341,14 @@ namespace UnityEditor.AI
             Gizmos.matrix = oldMatrix;
             Gizmos.color = oldColor;
 
-            if (s_DebugVisualization.useFocus)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawCube(s_DebugVisualization.focusPoint, new Vector3(0.1f, 0.1f, 0.1f));
-            }
-
             Gizmos.DrawIcon(navSurface.transform.position, "NavMeshSurface Icon", true);
-        }
-
-        public void OnSceneGUI()
-        {
-            if (s_DebugVisualization.useFocus)
-            {
-                Handles.Label(s_DebugVisualization.focusPoint, "Focus Point");
-                EditorGUI.BeginChangeCheck();
-                s_DebugVisualization.focusPoint = Handles.PositionHandle(s_DebugVisualization.focusPoint, Quaternion.identity);
-                if (EditorGUI.EndChangeCheck())
-                    Repaint();
-            }
         }
 
         [MenuItem("GameObject/AI/NavMesh Surface", false, 2000)]
         static public void CreateNavMeshSurface(MenuCommand menuCommand)
         {
             var parent = menuCommand.context as GameObject;
-            var go = NavMeshEditorHelpers.CreateAndSelectGameObject("NavMesh Surface", parent);
+            var go = NavMeshComponentsGUIUtility.CreateAndSelectGameObject("NavMesh Surface", parent);
             go.AddComponent<NavMeshSurface>();
             var view = SceneView.lastActiveSceneView;
             if (view != null)

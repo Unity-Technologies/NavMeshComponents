@@ -138,11 +138,6 @@ namespace UnityEngine.AI
 
         public void Bake()
         {
-            Bake(new NavMeshBuildDebugSettings());
-        }
-
-        public void Bake(NavMeshBuildDebugSettings debug)
-        {
             var sources = CollectSources();
 
             // Use unscaled bounds - this differs in behaviour from e.g. collider components.
@@ -154,7 +149,7 @@ namespace UnityEngine.AI
             }
 
             var data = NavMeshBuilder.BuildNavMeshData(GetBuildSettings(),
-                sources, sourcesBounds, transform.position, transform.rotation, debug);
+                sources, sourcesBounds, transform.position, transform.rotation);
 
             if (data != null)
             {
@@ -305,13 +300,16 @@ namespace UnityEngine.AI
                 switch (src.shape)
                 {
                     case NavMeshBuildSourceShape.Mesh:
-                        result.Encapsulate(GetWorldBounds(worldToLocal * src.transform, src.mesh.bounds));
-                        break;
+                        {
+                            var m = src.sourceObject as Mesh;
+                            result.Encapsulate(GetWorldBounds(worldToLocal * src.transform, m.bounds));
+                            break;
+                        }
                     case NavMeshBuildSourceShape.Terrain:
                         {
                             // Terrain pivot is lower/left corner - shift bounds accordingly
-                            var tsize = src.terrainData.size;
-                            result.Encapsulate(GetWorldBounds(worldToLocal * src.transform, new Bounds(0.5f * tsize, tsize)));
+                            var t = src.sourceObject as TerrainData;
+                            result.Encapsulate(GetWorldBounds(worldToLocal * src.transform, new Bounds(0.5f * t.size, t.size)));
                             break;
                         }
                     case NavMeshBuildSourceShape.Box:

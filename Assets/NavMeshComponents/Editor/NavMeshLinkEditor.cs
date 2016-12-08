@@ -73,7 +73,7 @@ namespace UnityEditor.AI
         {
             serializedObject.Update();
 
-            NavMeshEditorHelpers.AgentTypePopup("Agent Type", m_AgentTypeID);
+            NavMeshComponentsGUIUtility.AgentTypePopup("Agent Type", m_AgentTypeID);
             EditorGUILayout.Space();
 
             EditorGUILayout.PropertyField(m_StartPoint);
@@ -108,7 +108,7 @@ namespace UnityEditor.AI
             EditorGUILayout.PropertyField(m_AutoUpdatePosition);
             EditorGUILayout.PropertyField(m_Bidirectional);
 
-            NavMeshEditorHelpers.AreaPopup("Area Type", m_Area);
+            NavMeshComponentsGUIUtility.AreaPopup("Area Type", m_Area);
 
             serializedObject.ApplyModifiedProperties();
 
@@ -266,7 +266,7 @@ namespace UnityEditor.AI
         static public void CreateNavMeshLink(MenuCommand menuCommand)
         {
             var parent = menuCommand.context as GameObject;
-            GameObject go = NavMeshEditorHelpers.CreateAndSelectGameObject("NavMesh Link", parent);
+            GameObject go = NavMeshComponentsGUIUtility.CreateAndSelectGameObject("NavMesh Link", parent);
             go.AddComponent<NavMeshLink>();
             var view = SceneView.lastActiveSceneView;
             if (view != null)

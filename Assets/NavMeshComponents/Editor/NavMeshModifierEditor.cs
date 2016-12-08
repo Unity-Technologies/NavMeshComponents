@@ -36,11 +36,11 @@ namespace UnityEditor.AI
             if (m_OverrideArea.boolValue)
             {
                 EditorGUI.indentLevel++;
-                NavMeshEditorHelpers.AreaPopup("Area Type", m_Area);
+                NavMeshComponentsGUIUtility.AreaPopup("Area Type", m_Area);
                 EditorGUI.indentLevel--;
             }
 
-            NavMeshEditorHelpers.AgentMaskPopup("Affected Agents", m_AffectedAgents);
+            NavMeshComponentsGUIUtility.AgentMaskPopup("Affected Agents", m_AffectedAgents);
             EditorGUILayout.Space();
 
             serializedObject.ApplyModifiedProperties();
