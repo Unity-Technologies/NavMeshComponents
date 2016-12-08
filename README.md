@@ -14,21 +14,17 @@ These components comprise the high level controls for building and using NavMesh
 High Level Components:  
 https://docs.google.com/document/d/1usMrwMHTPNBFyT1hZRt-nQZzRDTciIQRVzmA7MQsFNw
 
-Low Level API:  
-https://docs.google.com/document/d/1g1KE59K7HQq25kAMxweRt5ePXkEMvgNnAU3zfX_R7m8
-
 # How To Get Started
 
-Download the feature build which is based on Unity 5.5.0f2
-
-http://beta.unity3d.com/download/6c58803e57e3/public_download.html
+Download and install Unity 5.6.0b1 or newer.
 
 Clone or download this repository and open the project using the feature build.
 Alternatively, you can copy the contents of `Assets/NavMeshComponents` to an existing project.
 
 Additional examples are available in the `Assets/Examples` folder.
 
-_Note: the Unity build above is an experimental feature build, features and API is subject to change. **Make sure to backup an existing project before opening it with this build**_.
+_Note: During the beta cycle features and API are subject to change. Back up existing projects before using.
+**Make sure to backup an existing project before opening it with this build**_.
 
 # FAQ
 
