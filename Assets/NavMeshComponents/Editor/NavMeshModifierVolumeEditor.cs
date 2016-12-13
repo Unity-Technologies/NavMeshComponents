@@ -37,8 +37,8 @@ namespace UnityEditor.AI
             EditorGUILayout.PropertyField(m_Size);
             EditorGUILayout.PropertyField(m_Center);
 
-            NavMeshEditorHelpers.AreaPopup("Area Type", m_Area);
-            NavMeshEditorHelpers.AgentMaskPopup("Affected Agents", m_AffectedAgents);
+            NavMeshComponentsGUIUtility.AreaPopup("Area Type", m_Area);
+            NavMeshComponentsGUIUtility.AgentMaskPopup("Affected Agents", m_AffectedAgents);
             EditorGUILayout.Space();
 
             serializedObject.ApplyModifiedProperties();
@@ -97,7 +97,7 @@ namespace UnityEditor.AI
         static public void CreateNavMeshModifierVolume(MenuCommand menuCommand)
         {
             var parent = menuCommand.context as GameObject;
-            var go = NavMeshEditorHelpers.CreateAndSelectGameObject("NavMesh Modifier Volume", parent);
+            var go = NavMeshComponentsGUIUtility.CreateAndSelectGameObject("NavMesh Modifier Volume", parent);
             go.AddComponent<NavMeshModifierVolume>();
             var view = SceneView.lastActiveSceneView;
             if (view != null)
