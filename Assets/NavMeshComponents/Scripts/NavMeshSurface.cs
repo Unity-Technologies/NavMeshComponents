@@ -12,7 +12,7 @@ namespace UnityEngine.AI
     [ExecuteInEditMode]
     [DefaultExecutionOrder(-102)]
     [AddComponentMenu("Navigation/NavMeshSurface", 30)]
-    [HelpURL("https://github.com/Unity-Technologies/NavMeshComponents#further-documentation-draft")]
+    [HelpURL("https://github.com/Unity-Technologies/NavMeshComponents#documentation-draft")]
     public class NavMeshSurface : MonoBehaviour
     {
         [SerializeField]
