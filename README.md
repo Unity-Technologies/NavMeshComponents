@@ -1,6 +1,6 @@
-# High Level Components for Runtime NavMesh Building
+# Components for Runtime NavMesh Building
 
-Here we introduce four high level components for the navigation system:
+Here we introduce four components for the navigation system:
 
 * __NavMeshSurface__ – for building and enabling a navmesh surface for one agent type.
 * __NavMeshModifier__ – affects the navmesh generation of navmesh area types, based on the transform hierarchy.
@@ -9,9 +9,8 @@ Here we introduce four high level components for the navigation system:
 
 These components comprise the high level controls for building and using NavMeshes at runtime as well as edit time.
 
-### Further Documentation (draft)
+### Documentation (draft)
 
-High Level Components:  
 https://docs.google.com/document/d/1usMrwMHTPNBFyT1hZRt-nQZzRDTciIQRVzmA7MQsFNw
 
 # How To Get Started
