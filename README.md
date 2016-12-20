@@ -15,7 +15,7 @@ https://docs.google.com/document/d/1usMrwMHTPNBFyT1hZRt-nQZzRDTciIQRVzmA7MQsFNw
 
 # How To Get Started
 
-Download and install Unity 5.6.0b1 or newer.
+Download and install Unity 5.6.0b2 or newer.
 
 Clone or download this repository and open the project using the feature build.
 Alternatively, you can copy the contents of `Assets/NavMeshComponents` to an existing project.
