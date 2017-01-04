@@ -120,10 +120,9 @@ namespace UnityEditor.AI
                 return;
 
             var vol = (NavMeshModifierVolume)target;
-            using (new Handles.MatrixScope(vol.transform.localToWorldMatrix))
+            var color = vol.enabled ? s_HandleColor : s_HandleColorDisabled;
+            using (new Handles.DrawingScope(color, vol.transform.localToWorldMatrix))
             {
-                var color = vol.enabled ? s_HandleColor : s_HandleColorDisabled;
-                m_BoundsHandle.SetColor(color);
                 m_BoundsHandle.center = vol.center;
                 m_BoundsHandle.size = vol.size;
 

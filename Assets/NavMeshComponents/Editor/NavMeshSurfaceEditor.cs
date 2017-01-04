@@ -380,11 +380,10 @@ namespace UnityEditor.AI
                 return;
 
             var navSurface = (NavMeshSurface)target;
+            var color = navSurface.enabled ? s_HandleColor : s_HandleColorDisabled;
             var localToWorld = Matrix4x4.TRS(navSurface.transform.position, navSurface.transform.rotation, Vector3.one);
-            using (new Handles.MatrixScope(localToWorld))
+            using (new Handles.DrawingScope(color, localToWorld))
             {
-                var color = navSurface.enabled ? s_HandleColor : s_HandleColorDisabled;
-                m_BoundsHandle.SetColor(color);
                 m_BoundsHandle.center = navSurface.center;
                 m_BoundsHandle.size = navSurface.size;
 
@@ -399,7 +398,6 @@ namespace UnityEditor.AI
                     navSurface.size = size;
                     EditorUtility.SetDirty(target);
                 }
-
             }
         }
 
