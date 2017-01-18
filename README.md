@@ -34,7 +34,7 @@ Q: Can I use navmesh'es for more than one agent size?
 A: yes
 
 Q: Can I put a navmesh in a prefab?  
-A: yes - with some limitiations.
+A: yes - with some limitations.
 
 Q: How do i connect two navmesh surfaces?  
 A: Use the NavMeshLink to connect the two sides
