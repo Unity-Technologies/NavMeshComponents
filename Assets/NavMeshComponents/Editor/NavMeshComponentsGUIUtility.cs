@@ -203,16 +203,8 @@ namespace UnityEditor.AI
         static void SetAgentMaskNone(object data)
         {
             var agentMask = (SerializedProperty)data;
-
-            // Workaround for bug with clearing arrays of mixed
-            // length on an aggregrated SerializedObject
-            foreach (var target in agentMask.serializedObject.targetObjects)
-            {
-                var targetProp = new SerializedObject(target).FindProperty(agentMask.propertyPath);
-                targetProp.arraySize = 0;
-                targetProp.serializedObject.ApplyModifiedProperties();
-            }
-            agentMask.serializedObject.SetIsDifferentCacheDirty();
+            agentMask.ClearArray();
+            agentMask.serializedObject.ApplyModifiedProperties();
         }
 
         static void SetAgentMaskAll(object data)
