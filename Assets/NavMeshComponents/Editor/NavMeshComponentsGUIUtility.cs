@@ -7,7 +7,7 @@ namespace UnityEditor.AI
     {
         public static void AreaPopup(string labelName, SerializedProperty areaProperty)
         {
-            var areaIndex = 0;
+            var areaIndex = -1;
             var areaNames = GameObjectUtility.GetNavMeshAreaNames();
             for (var i = 0; i < areaNames.Length; i++)
             {
