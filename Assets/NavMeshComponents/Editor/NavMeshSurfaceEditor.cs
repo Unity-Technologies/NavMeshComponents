@@ -39,6 +39,15 @@ namespace UnityEditor.AI
             public readonly GUIContent m_ShowPolyMeshDetail = new GUIContent("Show Poly Mesh Detail");
         }
 
+        struct AsyncBakeOperation
+        {
+            public NavMeshSurface surface;
+            public NavMeshData bakeData;
+            public AsyncOperation bakeOperation;
+        }
+
+        static List<AsyncBakeOperation> s_BakeOperations = new List<AsyncBakeOperation> ();
+
         static Styles s_Styles;
 
         static bool s_ShowDebugOptions;
@@ -91,7 +100,7 @@ namespace UnityEditor.AI
             return targetPath;
         }
 
-        void CreateNavMeshAsset(NavMeshSurface surface)
+        static void CreateNavMeshAsset(NavMeshSurface surface)
         {
             var targetPath = GetAndEnsureTargetPath(surface);
 
@@ -100,7 +109,7 @@ namespace UnityEditor.AI
             AssetDatabase.CreateAsset(surface.bakedNavMeshData, combinedAssetPath);
         }
 
-        NavMeshData GetNavMeshAssetToDelete(NavMeshSurface navSurface)
+        static NavMeshData GetNavMeshAssetToDelete(NavMeshSurface navSurface)
         {
             var prefabType = PrefabUtility.GetPrefabType(navSurface);
             if (prefabType == PrefabType.PrefabInstance || prefabType == PrefabType.DisconnectedPrefabInstance)
@@ -111,20 +120,6 @@ namespace UnityEditor.AI
                     return null;
             }
             return navSurface.bakedNavMeshData;
-        }
-
-        void BakeSurface(NavMeshSurface navSurface)
-        {
-            var assetToDelete = GetNavMeshAssetToDelete(navSurface);
-            navSurface.Bake();
-            EditorUtility.SetDirty(navSurface);
-
-            if (assetToDelete)
-            {
-                AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(assetToDelete));
-            }
-            CreateNavMeshAsset(navSurface);
-            EditorSceneManager.MarkSceneDirty(navSurface.gameObject.scene);
         }
 
         void ClearSurface(NavMeshSurface navSurface)
@@ -296,12 +291,92 @@ namespace UnityEditor.AI
 
                 if (GUILayout.Button("Bake"))
                 {
-                    foreach (NavMeshSurface navSurface in targets)
-                        BakeSurface(navSurface);
-                    SceneView.RepaintAll();
+                    // Remove first to avoid double registration of the callback
+                    EditorApplication.update -= UpdateAsyncBuildOperations;
+                    EditorApplication.update += UpdateAsyncBuildOperations;
+
+                    foreach (NavMeshSurface surf in targets)
+                    {
+                        var oper = new AsyncBakeOperation();
+
+                        oper.bakeData = InitializeBakeData(surf);
+                        oper.bakeOperation = surf.UpdateNavMesh(oper.bakeData);
+                        oper.surface = surf;
+
+                        s_BakeOperations.Add(oper);
+                    }
                 }
+
                 GUILayout.EndHorizontal();
             }
+
+            // Show progress for the selected targets
+            for (int i = s_BakeOperations.Count - 1; i >= 0; --i)
+            {
+                if (!targets.Contains(s_BakeOperations [i].surface))
+                    continue;
+
+                var oper = s_BakeOperations[i].bakeOperation;
+                if (oper == null)
+                    continue;
+
+                var p = oper.progress;
+                if (oper.isDone)
+                {
+                    SceneView.RepaintAll();
+                    continue;
+                }
+
+                GUILayout.BeginHorizontal();
+
+                if (GUILayout.Button("Cancel", EditorStyles.miniButton))
+                {
+                    var bakeData = s_BakeOperations [i].bakeData;
+                    UnityEngine.AI.NavMeshBuilder.Cancel(bakeData);
+                    s_BakeOperations.RemoveAt(i);
+                }
+
+                EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), p, "Baking: " + (int)(100 * p) + "%");
+                if (p <= 1)
+                    Repaint();
+
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        static NavMeshData InitializeBakeData(NavMeshSurface surface)
+        {
+            var emptySources = new List<NavMeshBuildSource>();
+            var emptyBounds = new Bounds();
+            return UnityEngine.AI.NavMeshBuilder.BuildNavMeshData(surface.GetBuildSettings(), emptySources, emptyBounds
+                                                    , surface.transform.position, surface.transform.rotation);
+        }
+
+        static void UpdateAsyncBuildOperations()
+        {
+            foreach (var oper in s_BakeOperations)
+            {
+                if (oper.surface == null || oper.bakeOperation == null)
+                    continue;
+
+                if (oper.bakeOperation.isDone)
+                {
+                    var surface = oper.surface;
+                    var delete = GetNavMeshAssetToDelete(surface);
+                    if (delete != null)
+                        AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(delete));
+
+                    surface.RemoveData();
+                    surface.bakedNavMeshData = oper.bakeData;
+                    if (surface.isActiveAndEnabled)
+                        surface.AddData();
+                    CreateNavMeshAsset(surface);
+                    EditorSceneManager.MarkSceneDirty(surface.gameObject.scene);
+                }
+            }
+            s_BakeOperations.RemoveAll(o => o.bakeOperation == null || o.bakeOperation.isDone);
+            if (s_BakeOperations.Count == 0)
+                EditorApplication.update -= UpdateAsyncBuildOperations;
         }
 
         [DrawGizmo(GizmoType.Selected | GizmoType.Active | GizmoType.Pickable)]
@@ -402,7 +477,7 @@ namespace UnityEditor.AI
         }
 
         [MenuItem("GameObject/AI/NavMesh Surface", false, 2000)]
-        static public void CreateNavMeshSurface(MenuCommand menuCommand)
+        public static void CreateNavMeshSurface(MenuCommand menuCommand)
         {
             var parent = menuCommand.context as GameObject;
             var go = NavMeshComponentsGUIUtility.CreateAndSelectGameObject("NavMesh Surface", parent);
