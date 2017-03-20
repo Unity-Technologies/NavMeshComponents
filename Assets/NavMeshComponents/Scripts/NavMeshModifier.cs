@@ -22,34 +22,33 @@ namespace UnityEngine.AI
         // List of agent types the modifier is applied for.
         // Special values: empty == None, m_AffectedAgents[0] =-1 == All.
         [SerializeField]
-        List<int> m_AffectedAgents = new List<int> (new int[] { -1 });   // Default value is All
+        List<int> m_AffectedAgents = new List<int>(new int[] { -1 });    // Default value is All
 
-        static readonly List<NavMeshModifier> s_NavMeshModifiers = new List<NavMeshModifier> ();
+        static readonly List<NavMeshModifier> s_NavMeshModifiers = new List<NavMeshModifier>();
 
         public static List<NavMeshModifier> activeModifiers
         {
             get { return s_NavMeshModifiers; }
         }
 
-        void OnEnable ()
+        void OnEnable()
         {
-            if (!s_NavMeshModifiers.Contains (this))
-                s_NavMeshModifiers.Add (this);
+            if (!s_NavMeshModifiers.Contains(this))
+                s_NavMeshModifiers.Add(this);
         }
 
-        void OnDisable ()
+        void OnDisable()
         {
-            s_NavMeshModifiers.Remove (this);
+            s_NavMeshModifiers.Remove(this);
         }
 
-        public bool AffectsAgentType (int agentTypeID)
+        public bool AffectsAgentType(int agentTypeID)
         {
             if (m_AffectedAgents.Count == 0)
                 return false;
             if (m_AffectedAgents[0] == -1)
                 return true;
-            return m_AffectedAgents.IndexOf (agentTypeID) != -1;
+            return m_AffectedAgents.IndexOf(agentTypeID) != -1;
         }
-
     }
 }

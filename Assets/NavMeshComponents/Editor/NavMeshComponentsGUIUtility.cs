@@ -15,21 +15,21 @@ namespace UnityEditor.AI
                 if (areaValue == areaProperty.intValue)
                     areaIndex = i;
             }
-            ArrayUtility.Add (ref areaNames, "");
-            ArrayUtility.Add (ref areaNames, "Open Area Settings...");
+            ArrayUtility.Add(ref areaNames, "");
+            ArrayUtility.Add(ref areaNames, "Open Area Settings...");
 
             var rect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
             EditorGUI.BeginProperty(rect, GUIContent.none, areaProperty);
 
             EditorGUI.BeginChangeCheck();
-            areaIndex = EditorGUI.Popup (rect, labelName, areaIndex, areaNames);
+            areaIndex = EditorGUI.Popup(rect, labelName, areaIndex, areaNames);
 
             if (EditorGUI.EndChangeCheck())
             {
                 if (areaIndex >= 0 && areaIndex < areaNames.Length - 2)
                     areaProperty.intValue = GameObjectUtility.GetNavMeshAreaFromName(areaNames[areaIndex]);
-                else if (areaIndex == areaNames.Length-1)
-                    NavMeshEditorHelpers.OpenAreaSettings ();
+                else if (areaIndex == areaNames.Length - 1)
+                    NavMeshEditorHelpers.OpenAreaSettings();
             }
 
             EditorGUI.EndProperty();
@@ -42,34 +42,34 @@ namespace UnityEditor.AI
             var agentTypeNames = new string[count + 2];
             for (var i = 0; i < count; i++)
             {
-                var id = NavMesh.GetSettingsByIndex (i).agentTypeID;
-                var name = NavMesh.GetSettingsNameFromID (id);
+                var id = NavMesh.GetSettingsByIndex(i).agentTypeID;
+                var name = NavMesh.GetSettingsNameFromID(id);
                 agentTypeNames[i] = name;
                 if (id == agentTypeID.intValue)
                     index = i;
             }
             agentTypeNames[count] = "";
-            agentTypeNames[count+1] = "Open Agent Settings...";
+            agentTypeNames[count + 1] = "Open Agent Settings...";
 
             bool validAgentType = index != -1;
             if (!validAgentType)
             {
-                EditorGUILayout.HelpBox ("Agent Type invalid.", MessageType.Warning);
+                EditorGUILayout.HelpBox("Agent Type invalid.", MessageType.Warning);
             }
 
             var rect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
             EditorGUI.BeginProperty(rect, GUIContent.none, agentTypeID);
 
             EditorGUI.BeginChangeCheck();
-            index = EditorGUI.Popup (rect, labelName, index, agentTypeNames);
+            index = EditorGUI.Popup(rect, labelName, index, agentTypeNames);
             if (EditorGUI.EndChangeCheck())
             {
                 if (index >= 0 && index < count)
                 {
-                    var id = NavMesh.GetSettingsByIndex (index).agentTypeID;
+                    var id = NavMesh.GetSettingsByIndex(index).agentTypeID;
                     agentTypeID.intValue = id;
                 }
-                else if (index == count+1)
+                else if (index == count + 1)
                 {
                     NavMeshEditorHelpers.OpenAgentSettings(-1);
                 }
@@ -87,16 +87,16 @@ namespace UnityEditor.AI
             // Contents of the dropdown box.
             string popupContent = "";
 
-            if(agentMask.hasMultipleDifferentValues)
+            if (agentMask.hasMultipleDifferentValues)
                 popupContent = "\u2014";
             else
                 popupContent = GetAgentMaskLabelName(agentMask);
 
-            var content = new GUIContent (popupContent);
-            var popupRect = GUILayoutUtility.GetRect (content, EditorStyles.popup);
+            var content = new GUIContent(popupContent);
+            var popupRect = GUILayoutUtility.GetRect(content, EditorStyles.popup);
 
             EditorGUI.BeginProperty(popupRect, GUIContent.none, agentMask);
-            popupRect = EditorGUI.PrefixLabel (popupRect, 0, new GUIContent (labelName));
+            popupRect = EditorGUI.PrefixLabel(popupRect, 0, new GUIContent(labelName));
             bool pressed = GUI.Button(popupRect, content, EditorStyles.popup);
 
             if (pressed)
@@ -106,36 +106,36 @@ namespace UnityEditor.AI
                 var showAll = show && IsAll(agentMask);
 
                 var menu = new GenericMenu();
-                menu.AddItem (new GUIContent ("None"), showNone, SetAgentMaskNone, agentMask);
-                menu.AddItem (new GUIContent ("All"), showAll, SetAgentMaskAll, agentMask);
-                menu.AddSeparator ("");
+                menu.AddItem(new GUIContent("None"), showNone, SetAgentMaskNone, agentMask);
+                menu.AddItem(new GUIContent("All"), showAll, SetAgentMaskAll, agentMask);
+                menu.AddSeparator("");
 
-                var count = NavMesh.GetSettingsCount ();
+                var count = NavMesh.GetSettingsCount();
                 for (var i = 0; i < count; i++)
                 {
-                    var id = NavMesh.GetSettingsByIndex (i).agentTypeID;
+                    var id = NavMesh.GetSettingsByIndex(i).agentTypeID;
                     var sname = NavMesh.GetSettingsNameFromID(id);
 
-                    var showSelected = show && AgentMaskHasSelectedAgentTypeID(agentMask, id);                        
+                    var showSelected = show && AgentMaskHasSelectedAgentTypeID(agentMask, id);
                     var userData = new object[] { agentMask, id, !showSelected };
-                    menu.AddItem (new GUIContent (sname), showSelected, ToggleAgentMaskItem, userData);
+                    menu.AddItem(new GUIContent(sname), showSelected, ToggleAgentMaskItem, userData);
                 }
 
-                menu.DropDown (popupRect);
+                menu.DropDown(popupRect);
             }
 
             EditorGUI.EndProperty();
         }
 
-        public static GameObject CreateAndSelectGameObject (string suggestedName, GameObject parent)
+        public static GameObject CreateAndSelectGameObject(string suggestedName, GameObject parent)
         {
             var parentTransform = parent != null ? parent.transform : null;
-            var uniqueName = GameObjectUtility.GetUniqueNameForSibling (parentTransform, suggestedName);
-            var child = new GameObject (uniqueName);
+            var uniqueName = GameObjectUtility.GetUniqueNameForSibling(parentTransform, suggestedName);
+            var child = new GameObject(uniqueName);
 
-            Undo.RegisterCreatedObjectUndo (child, "Create " + uniqueName);
+            Undo.RegisterCreatedObjectUndo(child, "Create " + uniqueName);
             if (parentTransform != null)
-                Undo.SetTransformParent (child.transform, parentTransform, "Parent " + uniqueName);
+                Undo.SetTransformParent(child.transform, parentTransform, "Parent " + uniqueName);
 
             Selection.activeGameObject = child;
 
@@ -256,4 +256,3 @@ namespace UnityEditor.AI
         }
     }
 }
-

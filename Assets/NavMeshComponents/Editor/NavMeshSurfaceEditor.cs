@@ -46,7 +46,7 @@ namespace UnityEditor.AI
             public AsyncOperation bakeOperation;
         }
 
-        static List<AsyncBakeOperation> s_BakeOperations = new List<AsyncBakeOperation> ();
+        static List<AsyncBakeOperation> s_BakeOperations = new List<AsyncBakeOperation>();
 
         static Styles s_Styles;
 
@@ -313,7 +313,7 @@ namespace UnityEditor.AI
             // Show progress for the selected targets
             for (int i = s_BakeOperations.Count - 1; i >= 0; --i)
             {
-                if (!targets.Contains(s_BakeOperations [i].surface))
+                if (!targets.Contains(s_BakeOperations[i].surface))
                     continue;
 
                 var oper = s_BakeOperations[i].bakeOperation;
@@ -331,7 +331,7 @@ namespace UnityEditor.AI
 
                 if (GUILayout.Button("Cancel", EditorStyles.miniButton))
                 {
-                    var bakeData = s_BakeOperations [i].bakeData;
+                    var bakeData = s_BakeOperations[i].bakeData;
                     UnityEngine.AI.NavMeshBuilder.Cancel(bakeData);
                     s_BakeOperations.RemoveAt(i);
                 }
@@ -349,7 +349,7 @@ namespace UnityEditor.AI
             var emptySources = new List<NavMeshBuildSource>();
             var emptyBounds = new Bounds();
             return UnityEngine.AI.NavMeshBuilder.BuildNavMeshData(surface.GetBuildSettings(), emptySources, emptyBounds
-                                                    , surface.transform.position, surface.transform.rotation);
+                , surface.transform.position, surface.transform.rotation);
         }
 
         static void UpdateAsyncBuildOperations()
