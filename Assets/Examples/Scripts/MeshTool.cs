@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 public enum ExtrudeMethod
@@ -71,6 +71,6 @@ public class MeshTool : MonoBehaviour
         float y = pos.y - mean.y;
         float z = pos.z - mean.z;
         float n = 1.0f / (2.0f * Mathf.PI * dev * dev);
-        return n * Mathf.Pow(2.718281828f, -(x*x + y*y + z*z)/(2.0f*dev*dev));
+        return n * Mathf.Pow(2.718281828f, -(x * x + y * y + z * z) / (2.0f * dev * dev));
     }
 }

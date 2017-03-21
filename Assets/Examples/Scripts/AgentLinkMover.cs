@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 
@@ -39,10 +39,10 @@ public class AgentLinkMover : MonoBehaviour
     IEnumerator NormalSpeed(NavMeshAgent agent)
     {
         OffMeshLinkData data = agent.currentOffMeshLinkData;
-        Vector3 endPos = data.endPos + Vector3.up*agent.baseOffset;
+        Vector3 endPos = data.endPos + Vector3.up * agent.baseOffset;
         while (agent.transform.position != endPos)
         {
-            agent.transform.position = Vector3.MoveTowards(agent.transform.position, endPos, agent.speed*Time.deltaTime);
+            agent.transform.position = Vector3.MoveTowards(agent.transform.position, endPos, agent.speed * Time.deltaTime);
             yield return null;
         }
     }
@@ -51,11 +51,11 @@ public class AgentLinkMover : MonoBehaviour
     {
         OffMeshLinkData data = agent.currentOffMeshLinkData;
         Vector3 startPos = agent.transform.position;
-        Vector3 endPos = data.endPos + Vector3.up*agent.baseOffset;
+        Vector3 endPos = data.endPos + Vector3.up * agent.baseOffset;
         float normalizedTime = 0.0f;
         while (normalizedTime < 1.0f)
         {
-            float yOffset = height * 4.0f*(normalizedTime - normalizedTime*normalizedTime);
+            float yOffset = height * 4.0f * (normalizedTime - normalizedTime * normalizedTime);
             agent.transform.position = Vector3.Lerp(startPos, endPos, normalizedTime) + yOffset * Vector3.up;
             normalizedTime += Time.deltaTime / duration;
             yield return null;
@@ -66,7 +66,7 @@ public class AgentLinkMover : MonoBehaviour
     {
         OffMeshLinkData data = agent.currentOffMeshLinkData;
         Vector3 startPos = agent.transform.position;
-        Vector3 endPos = data.endPos + Vector3.up*agent.baseOffset;
+        Vector3 endPos = data.endPos + Vector3.up * agent.baseOffset;
         float normalizedTime = 0.0f;
         while (normalizedTime < 1.0f)
         {

@@ -58,9 +58,9 @@ public class LocalNavMeshBuilder : MonoBehaviour
 
     static Vector3 Quantize(Vector3 v, Vector3 quant)
     {
-        float x = quant.x*Mathf.Floor(v.x/quant.x);
-        float y = quant.y*Mathf.Floor(v.y/quant.y);
-        float z = quant.z*Mathf.Floor(v.z/quant.z);
+        float x = quant.x * Mathf.Floor(v.x / quant.x);
+        float y = quant.y * Mathf.Floor(v.y / quant.y);
+        float z = quant.z * Mathf.Floor(v.z / quant.z);
         return new Vector3(x, y, z);
     }
 
@@ -68,7 +68,7 @@ public class LocalNavMeshBuilder : MonoBehaviour
     {
         // Quantize the bounds to update only when theres a 10% change in size
         var center = m_Tracked ? m_Tracked.position : transform.position;
-        return new Bounds(Quantize(center, 0.1f*m_Size), m_Size);
+        return new Bounds(Quantize(center, 0.1f * m_Size), m_Size);
     }
 
     void OnDrawGizmosSelected()

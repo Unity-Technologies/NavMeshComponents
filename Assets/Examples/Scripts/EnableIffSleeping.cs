@@ -1,8 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 // Enables a behaviour when a rigidbody settles movement
 // otherwise disables the behaviour
-public class EnableIffSleeping : MonoBehaviour {
+public class EnableIffSleeping : MonoBehaviour
+{
     public Behaviour m_Behaviour;
     Rigidbody m_Rigidbody;
 
@@ -11,7 +12,7 @@ public class EnableIffSleeping : MonoBehaviour {
         m_Rigidbody = GetComponent<Rigidbody>();
     }
 
-    void Update ()
+    void Update()
     {
         if (m_Rigidbody == null || m_Behaviour == null)
             return;
