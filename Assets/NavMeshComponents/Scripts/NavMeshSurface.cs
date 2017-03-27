@@ -67,7 +67,7 @@ namespace UnityEngine.AI
         // Currently not supported advanced options
         [SerializeField]
         bool m_BuildHeightMesh;
-        public bool buildHeightMesh { get { return m_BuildHeightMesh; } set { m_OverrideTileSize = value; } }
+        public bool buildHeightMesh { get { return m_BuildHeightMesh; } set { m_BuildHeightMesh = value; } }
 
         // Reference to whole scene navmesh data asset.
         [SerializeField]
@@ -122,6 +122,11 @@ namespace UnityEngine.AI
         public NavMeshBuildSettings GetBuildSettings()
         {
             var buildSettings = NavMesh.GetSettingsByID(m_AgentTypeID);
+            if (buildSettings.agentTypeID == -1)
+            {
+                Debug.LogWarning("No build settings for agent type ID " + agentTypeID, this);
+                buildSettings.agentTypeID = m_AgentTypeID;
+            }
 
             if (overrideTileSize)
             {
