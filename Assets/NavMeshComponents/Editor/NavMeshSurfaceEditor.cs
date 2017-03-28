@@ -106,7 +106,7 @@ namespace UnityEditor.AI
 
             var combinedAssetPath = Path.Combine(targetPath, "NavMesh-" + surface.name + ".asset");
             combinedAssetPath = AssetDatabase.GenerateUniqueAssetPath(combinedAssetPath);
-            AssetDatabase.CreateAsset(surface.bakedNavMeshData, combinedAssetPath);
+            AssetDatabase.CreateAsset(surface.navMeshData, combinedAssetPath);
         }
 
         static NavMeshData GetNavMeshAssetToDelete(NavMeshSurface navSurface)
@@ -116,17 +116,17 @@ namespace UnityEditor.AI
             {
                 // Don't allow deleting the asset belonging to the prefab parent
                 var parentSurface = PrefabUtility.GetPrefabParent(navSurface) as NavMeshSurface;
-                if (parentSurface && navSurface.bakedNavMeshData == parentSurface.bakedNavMeshData)
+                if (parentSurface && navSurface.navMeshData == parentSurface.navMeshData)
                     return null;
             }
-            return navSurface.bakedNavMeshData;
+            return navSurface.navMeshData;
         }
 
         void ClearSurface(NavMeshSurface navSurface)
         {
             var assetToDelete = GetNavMeshAssetToDelete(navSurface);
             navSurface.RemoveData();
-            navSurface.bakedNavMeshData = null;
+            navSurface.navMeshData = null;
             EditorUtility.SetDirty(navSurface);
 
             if (assetToDelete)
@@ -367,7 +367,7 @@ namespace UnityEditor.AI
                         AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(delete));
 
                     surface.RemoveData();
-                    surface.bakedNavMeshData = oper.bakeData;
+                    surface.navMeshData = oper.bakeData;
                     if (surface.isActiveAndEnabled)
                         surface.AddData();
                     CreateNavMeshAsset(surface);
@@ -421,9 +421,9 @@ namespace UnityEditor.AI
             }
             else
             {
-                if (navSurface.bakedNavMeshData != null)
+                if (navSurface.navMeshData != null)
                 {
-                    var bounds = navSurface.bakedNavMeshData.sourceBounds;
+                    var bounds = navSurface.navMeshData.sourceBounds;
                     Gizmos.color = Color.grey;
                     Gizmos.DrawWireCube(bounds.center, bounds.size);
                 }

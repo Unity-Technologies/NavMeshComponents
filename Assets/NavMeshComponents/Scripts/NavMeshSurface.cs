@@ -70,9 +70,10 @@ namespace UnityEngine.AI
         public bool buildHeightMesh { get { return m_BuildHeightMesh; } set { m_BuildHeightMesh = value; } }
 
         // Reference to whole scene navmesh data asset.
+        [UnityEngine.Serialization.FormerlySerializedAs ("m_BakedNavMeshData")]
         [SerializeField]
-        NavMeshData m_BakedNavMeshData;
-        public NavMeshData bakedNavMeshData { get { return m_BakedNavMeshData; } set { m_BakedNavMeshData = value; } }
+        NavMeshData m_NavMeshData;
+        public NavMeshData navMeshData { get { return m_NavMeshData; } set { m_NavMeshData = value; } }
 
         // Do not serialize - runtime only state.
         NavMeshDataInstance m_NavMeshDataInstance;
@@ -103,9 +104,9 @@ namespace UnityEngine.AI
             if (m_NavMeshDataInstance.valid)
                 return;
 
-            if (m_BakedNavMeshData != null)
+            if (m_NavMeshData != null)
             {
-                m_NavMeshDataInstance = NavMesh.AddNavMeshData(m_BakedNavMeshData, transform.position, transform.rotation);
+                m_NavMeshDataInstance = NavMesh.AddNavMeshData(m_NavMeshData, transform.position, transform.rotation);
                 m_NavMeshDataInstance.owner = this;
             }
 
@@ -141,7 +142,7 @@ namespace UnityEngine.AI
             return buildSettings;
         }
 
-        public void Bake()
+        public void BuildNavMesh()
         {
             var sources = CollectSources();
 
@@ -160,7 +161,7 @@ namespace UnityEngine.AI
             {
                 data.name = gameObject.name;
                 RemoveData();
-                m_BakedNavMeshData = data;
+                m_NavMeshData = data;
                 if (isActiveAndEnabled)
                     AddData();
             }
@@ -363,7 +364,7 @@ namespace UnityEngine.AI
         bool UnshareNavMeshAsset()
         {
             // Nothing to unshare
-            if (m_BakedNavMeshData == null)
+            if (m_NavMeshData == null)
                 return false;
 
             // Prefab parent owns the asset reference
@@ -373,14 +374,14 @@ namespace UnityEngine.AI
 
             // An instance can share asset reference only with its prefab parent
             var prefab = UnityEditor.PrefabUtility.GetPrefabParent(this) as NavMeshSurface;
-            if (prefab != null && prefab.bakedNavMeshData == bakedNavMeshData)
+            if (prefab != null && prefab.navMeshData == navMeshData)
                 return false;
 
             // Don't allow referencing an asset that's assigned to another surface
             for (var i = 0; i < s_NavMeshSurfaces.Count; ++i)
             {
                 var surface = s_NavMeshSurfaces[i];
-                if (surface != this && surface.m_BakedNavMeshData == m_BakedNavMeshData)
+                if (surface != this && surface.m_NavMeshData == m_NavMeshData)
                     return true;
             }
 
@@ -393,7 +394,7 @@ namespace UnityEngine.AI
             if (UnshareNavMeshAsset())
             {
                 Debug.LogWarning("Duplicating NavMeshSurface does not duplicate the referenced navmesh data", this);
-                m_BakedNavMeshData = null;
+                m_NavMeshData = null;
             }
 
             var settings = NavMesh.GetSettingsByID(m_AgentTypeID);
