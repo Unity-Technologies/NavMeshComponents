@@ -1,15 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum ExtrudeMethod
-{
-    Vertical,
-    MeshNormal
-}
-
 // Manipulation tool for displacing the vertices in a list of meshes
 public class MeshTool : MonoBehaviour
 {
+    public enum ExtrudeMethod
+    {
+        Vertical,
+        MeshNormal
+    }
+    
     public List<MeshFilter> m_Filters = new List<MeshFilter>();
     public float m_Radius = 1.5f;
     public float m_Power = 2.0f;
