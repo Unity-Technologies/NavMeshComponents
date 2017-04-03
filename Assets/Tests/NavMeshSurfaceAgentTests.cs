@@ -42,6 +42,7 @@ public class NavMeshSurfaceAgentTests
         GameObject.DestroyImmediate(surface.gameObject);
     }
 
+/*
     [Test]
     public void AgentIsOnNavMeshWhenMatchingAgentTypeID()
     {
@@ -58,6 +59,7 @@ public class NavMeshSurfaceAgentTests
         GameObject.DestroyImmediate(agent.gameObject);
         GameObject.DestroyImmediate(surface.gameObject);
     }
+*/
 
     [UnityTest]
     public IEnumerator AgentAlignsToSurfaceNextFrame()
