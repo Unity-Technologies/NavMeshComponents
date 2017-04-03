@@ -4,59 +4,105 @@ using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
 
+[TestFixture]
 public class NavMeshSurfaceLinkTests
 {
-    [Test]
-    public void NavMeshLinkCanConnectTwoSurfaces()
+    public GameObject plane1, plane2;
+    public NavMeshLink link;
+    public NavMeshSurface surface;
+
+    [SetUp]
+    public void CreatesPlanesAndLink()
     {
-        var plane1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var plane2 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        plane1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        plane2 = GameObject.CreatePrimitive(PrimitiveType.Plane);
         plane1.transform.position = 11.0f * Vector3.right;
 
-        var go = new GameObject();
-        var surface = go.AddComponent<NavMeshSurface>();
+        surface = new GameObject().AddComponent<NavMeshSurface>();
         surface.BuildNavMesh();
 
         Assert.IsFalse(HasPathConnecting(plane1, plane2));
+        Assert.IsFalse(HasPathConnecting(plane2, plane1));
 
-        var linkGO = new GameObject();
-        var link = linkGO.AddComponent<NavMeshLink>();
+        link = new GameObject().AddComponent<NavMeshLink>();
         link.startPoint = plane1.transform.position;
         link.endPoint = plane2.transform.position;
-        link.UpdateLink();
 
         Assert.IsTrue(HasPathConnecting(plane1, plane2));
+        Assert.IsTrue(HasPathConnecting(plane2, plane1));
+    }
 
-        GameObject.DestroyImmediate(go);
+    [TearDown]
+    public void DestroyPlanesAndLink()
+    {
+        GameObject.DestroyImmediate(surface.gameObject);
+        GameObject.DestroyImmediate(link.gameObject);
         GameObject.DestroyImmediate(plane1);
         GameObject.DestroyImmediate(plane2);
-        GameObject.DestroyImmediate(linkGO);
+    }
+
+    [Test]
+    public void NavMeshLinkCanConnectTwoSurfaces()
+    {
+        Assert.IsTrue(HasPathConnecting(plane1, plane2));
+    }
+
+    [Test]
+    public void DisablingBidirectionalMakesTheLinkOneWay()
+    {
+        link.bidirectional = false;
+        Assert.IsTrue(HasPathConnecting(plane1, plane2));
+        Assert.IsFalse(HasPathConnecting(plane2, plane1));
+    }
+
+    [Test]
+    public void ChangingAreaTypeCanBlockPath()
+    {
+        var areaMask = ~(1 << 4);
+        Assert.IsTrue(HasPathConnecting(plane1, plane2, areaMask));
+
+        link.area = 4;
+        Assert.IsFalse(HasPathConnecting(plane1, plane2, areaMask));
+    }
+
+    [Test]
+    public void EndpointsMoveRelativeToLinkOnUpdate()
+    {
+        link.transform.position += Vector3.forward;
+        Assert.IsFalse(HasPathConnectingViaPoint(plane1, plane2, plane1.transform.position + Vector3.forward));
+        Assert.IsFalse(HasPathConnectingViaPoint(plane1, plane2, plane2.transform.position + Vector3.forward));
+
+        link.UpdateLink();
+
+        Assert.IsTrue(HasPathConnectingViaPoint(plane1, plane2, plane1.transform.position + Vector3.forward));
+        Assert.IsTrue(HasPathConnectingViaPoint(plane1, plane2, plane2.transform.position + Vector3.forward));
+    }
+
+    [UnityTest]
+    public IEnumerator EndpointsMoveRelativeToLinkNextFrameWhenAutoUpdating()
+    {
+        link.transform.position += Vector3.forward;
+        link.autoUpdate = true;
+
+        Assert.IsFalse(HasPathConnectingViaPoint(plane1, plane2, plane1.transform.position + Vector3.forward));
+        Assert.IsFalse(HasPathConnectingViaPoint(plane1, plane2, plane2.transform.position + Vector3.forward));
+
+        yield return null;
+
+        Assert.IsTrue(HasPathConnectingViaPoint(plane1, plane2, plane1.transform.position + Vector3.forward));
+        Assert.IsTrue(HasPathConnectingViaPoint(plane1, plane2, plane2.transform.position + Vector3.forward));
     }
 
     [Test]
     public void ChangingCostModifierAffectsRoute()
     {
-        var plane1 = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var plane2 = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        plane1.transform.position = 11.0f * Vector3.right;
-
-        var go = new GameObject();
-        var surface = go.AddComponent<NavMeshSurface>();
-        surface.BuildNavMesh();
-
-        Assert.IsFalse(HasPathConnecting(plane1, plane2));
-
-        var linkGO = new GameObject();
-
-        var link1 = linkGO.AddComponent<NavMeshLink>();
+        var link1 = link;
         link1.startPoint = plane1.transform.position;
         link1.endPoint = plane2.transform.position + Vector3.forward;
-        link1.UpdateLink();
 
-        var link2 = linkGO.AddComponent<NavMeshLink>();
+        var link2 = link.gameObject.AddComponent<NavMeshLink>();
         link2.startPoint = plane1.transform.position;
         link2.endPoint = plane2.transform.position - Vector3.forward;
-        link2.UpdateLink();
 
         link1.costModifier = -1;
         link2.costModifier = 100;
@@ -67,11 +113,6 @@ public class NavMeshSurfaceLinkTests
         link2.costModifier = -1;
         Assert.IsFalse(HasPathConnectingViaPoint(plane1, plane2, link1.endPoint));
         Assert.IsTrue(HasPathConnectingViaPoint(plane1, plane2, link2.endPoint));
-
-        GameObject.DestroyImmediate(go);
-        GameObject.DestroyImmediate(plane1);
-        GameObject.DestroyImmediate(plane2);
-        GameObject.DestroyImmediate(linkGO);
     }
 
     public static bool HasPathConnecting(GameObject a, GameObject b, int areaMask = NavMesh.AllAreas, int agentTypeID = 0)
