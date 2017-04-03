@@ -9,7 +9,7 @@ public class MeshTool : MonoBehaviour
         Vertical,
         MeshNormal
     }
-    
+
     public List<MeshFilter> m_Filters = new List<MeshFilter>();
     public float m_Radius = 1.5f;
     public float m_Power = 2.0f;
