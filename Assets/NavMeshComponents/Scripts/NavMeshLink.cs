@@ -25,6 +25,10 @@ namespace UnityEngine.AI
         public float width { get { return m_Width; } set { m_Width = value; UpdateLink(); } }
 
         [SerializeField]
+        int m_CostModifier = -1;
+        public int costModifier { get { return m_CostModifier; } set { m_CostModifier = value; UpdateLink(); } }
+
+        [SerializeField]
         bool m_Bidirectional = true;
         public bool bidirectional { get { return m_Bidirectional; } set { m_Bidirectional = value; UpdateLink(); } }
 
@@ -111,7 +115,7 @@ namespace UnityEngine.AI
             link.startPosition = m_StartPoint;
             link.endPosition = m_EndPoint;
             link.width = m_Width;
-            link.costModifier = -1.0f;
+            link.costModifier = m_CostModifier;
             link.bidirectional = m_Bidirectional;
             link.area = m_Area;
             link.agentTypeID = m_AgentTypeID;

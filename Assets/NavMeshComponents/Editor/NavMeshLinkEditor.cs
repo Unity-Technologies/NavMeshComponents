@@ -9,6 +9,7 @@ namespace UnityEditor.AI
     {
         SerializedProperty m_AgentTypeID;
         SerializedProperty m_Area;
+        SerializedProperty m_CostModifier;
         SerializedProperty m_AutoUpdatePosition;
         SerializedProperty m_Bidirectional;
         SerializedProperty m_EndPoint;
@@ -25,6 +26,7 @@ namespace UnityEditor.AI
         {
             m_AgentTypeID = serializedObject.FindProperty("m_AgentTypeID");
             m_Area = serializedObject.FindProperty("m_Area");
+            m_CostModifier = serializedObject.FindProperty("m_CostModifier");
             m_AutoUpdatePosition = serializedObject.FindProperty("m_AutoUpdatePosition");
             m_Bidirectional = serializedObject.FindProperty("m_Bidirectional");
             m_EndPoint = serializedObject.FindProperty("m_EndPoint");
@@ -105,6 +107,7 @@ namespace UnityEditor.AI
             EditorGUILayout.Space();
 
             EditorGUILayout.PropertyField(m_Width);
+            EditorGUILayout.PropertyField(m_CostModifier);
             EditorGUILayout.PropertyField(m_AutoUpdatePosition);
             EditorGUILayout.PropertyField(m_Bidirectional);
 
