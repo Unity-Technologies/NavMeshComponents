@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 using System.Collections.Generic;
 
@@ -54,8 +54,8 @@ public class RandomInstancing : MonoBehaviour
 
     void UpdateInstances()
     {
-        var x = (int) Mathf.Floor(transform.position.x / m_Size);
-        var z = (int) Mathf.Floor(transform.position.z / m_Size);
+        var x = (int)Mathf.Floor(transform.position.x / m_Size);
+        var z = (int)Mathf.Floor(transform.position.z / m_Size);
         if (x == m_LocX && z == m_LocZ)
             return;
 
@@ -67,7 +67,7 @@ public class RandomInstancing : MonoBehaviour
         {
             for (var j = z - 2; j <= z + 2; ++j)
             {
-                if (m_Used >= m_PoolSize-1)
+                if (m_Used >= m_PoolSize - 1)
                     return;
                 UpdateTileInstances(i, j);
             }
@@ -87,7 +87,7 @@ public class RandomInstancing : MonoBehaviour
                 x = Random();
                 y = Random();
             }
-            var pos = new Vector3((i+x)*m_Size, m_Height, (j+y)*m_Size);
+            var pos = new Vector3((i + x) * m_Size, m_Height, (j + y) * m_Size);
 
             if (m_RandomOrientation)
             {
@@ -101,15 +101,15 @@ public class RandomInstancing : MonoBehaviour
 
     static int Hash2(int i, int j)
     {
-        return (i*73856093) ^ (j*19349663);
+        return (i * 73856093) ^ (j * 19349663);
     }
 
     float Random()
     {
         m_Seed = (m_Seed ^ 123459876);
-        var k = m_Seed/127773;
-        m_Seed = 16807*(m_Seed - k*127773) - 2836*k;
-        if (m_Seed < 0) m_Seed = m_Seed+2147483647;
+        var k = m_Seed / 127773;
+        m_Seed = 16807 * (m_Seed - k * 127773) - 2836 * k;
+        if (m_Seed < 0) m_Seed = m_Seed + 2147483647;
         float ran0 = m_Seed * 1.0f / 2147483647.0f;
         m_Seed = (m_Seed ^ 123459876);
         return ran0;

@@ -68,8 +68,8 @@ class NavMeshPrefabInstanceEditor : Editor
     NavMeshData Build(NavMeshPrefabInstance instance)
     {
         var root = instance.transform;
-        var sources = new List <NavMeshBuildSource>();
-        var markups = new List <NavMeshBuildMarkup>();
+        var sources = new List<NavMeshBuildSource>();
+        var markups = new List<NavMeshBuildMarkup>();
 
         NavMeshBuilder.CollectSources(root, ~0, NavMeshCollectGeometry.RenderMeshes, 0, markups, sources);
         var settings = NavMesh.GetSettingsByID(0);
@@ -144,4 +144,3 @@ class NavMeshPrefabInstanceEditor : Editor
             instance.UpdateInstance();
     }
 }
-

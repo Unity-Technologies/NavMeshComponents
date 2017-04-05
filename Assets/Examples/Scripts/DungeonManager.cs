@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [DefaultExecutionOrder(-200)]
 public class DungeonManager : MonoBehaviour
@@ -19,21 +19,21 @@ public class DungeonManager : MonoBehaviour
                 bool px = false;
                 bool py = false;
                 if (x > 0)
-                    px = (map[(x-1)+y*m_Width] & 1) != 0;
+                    px = (map[(x - 1) + y * m_Width] & 1) != 0;
                 if (y > 0)
-                    py = (map[x+(y-1)*m_Width] & 2) != 0;
+                    py = (map[x + (y - 1) * m_Width] & 2) != 0;
 
                 int tile = 0;
                 if (px)
                     tile |= 4;
                 if (py)
                     tile |= 8;
-                if (x+1 < m_Width && Random.value > 0.5f)
+                if (x + 1 < m_Width && Random.value > 0.5f)
                     tile |= 1;
-                if (y+1 < m_Height && Random.value > 0.5f)
+                if (y + 1 < m_Height && Random.value > 0.5f)
                     tile |= 2;
 
-                map[x+y*m_Width] = tile;
+                map[x + y * m_Width] = tile;
             }
         }
 
@@ -41,9 +41,9 @@ public class DungeonManager : MonoBehaviour
         {
             for (int x = 0; x < m_Width; x++)
             {
-                var pos = new Vector3(x * m_Spacing, 0, y*m_Spacing);
-                if (m_Tiles[map[x+y*m_Width]] != null)
-                    Instantiate(m_Tiles[map[x+y*m_Width]], pos, Quaternion.identity);
+                var pos = new Vector3(x * m_Spacing, 0, y * m_Spacing);
+                if (m_Tiles[map[x + y * m_Width]] != null)
+                    Instantiate(m_Tiles[map[x + y * m_Width]], pos, Quaternion.identity);
             }
         }
     }

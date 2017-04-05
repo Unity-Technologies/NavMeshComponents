@@ -1,15 +1,15 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
-
-public enum ExtrudeMethod
-{
-    Vertical,
-    MeshNormal
-}
 
 // Manipulation tool for displacing the vertices in a list of meshes
 public class MeshTool : MonoBehaviour
 {
+    public enum ExtrudeMethod
+    {
+        Vertical,
+        MeshNormal
+    }
+
     public List<MeshFilter> m_Filters = new List<MeshFilter>();
     public float m_Radius = 1.5f;
     public float m_Power = 2.0f;
@@ -71,6 +71,6 @@ public class MeshTool : MonoBehaviour
         float y = pos.y - mean.y;
         float z = pos.z - mean.z;
         float n = 1.0f / (2.0f * Mathf.PI * dev * dev);
-        return n * Mathf.Pow(2.718281828f, -(x*x + y*y + z*z)/(2.0f*dev*dev));
+        return n * Mathf.Pow(2.718281828f, -(x * x + y * y + z * z) / (2.0f * dev * dev));
     }
 }
