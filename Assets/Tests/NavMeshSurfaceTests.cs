@@ -4,27 +4,38 @@ using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
 
+[TestFixture]
 public class NavMeshSurfaceTests
 {
+    GameObject plane;
+    NavMeshSurface surface;
+
+    [SetUp]
+    public void CreatePlaneWithSurface()
+    {
+        plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        surface = new GameObject().AddComponent<NavMeshSurface>();
+        Assert.IsFalse(HasNavMeshAtOrigin());
+    }
+
+    [TearDown]
+    public void DestroyPlaneWithSurface()
+    {
+        GameObject.DestroyImmediate(plane);
+        GameObject.DestroyImmediate(surface.gameObject);
+        Assert.IsFalse(HasNavMeshAtOrigin());
+    }
+
     [Test]
     public void NavMeshIsAvailableAfterBuild()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
-
-        Assert.IsFalse(HasNavMeshAtOrigin());
-
         surface.BuildNavMesh();
         Assert.IsTrue(HasNavMeshAtOrigin());
-        GameObject.DestroyImmediate(go);
     }
 
     [Test]
     public void NavMeshCanBeRemovedAndAdded()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
-
         surface.BuildNavMesh();
         Assert.IsTrue(HasNavMeshAtOrigin());
 
@@ -33,15 +44,11 @@ public class NavMeshSurfaceTests
 
         surface.AddData();
         Assert.IsTrue(HasNavMeshAtOrigin());
-
-        GameObject.DestroyImmediate(go);
     }
 
     [Test]
-    public void NavMeshIsNotAvailableWhenDisabledOrDestroyed()
+    public void NavMeshIsNotAvailableWhenDisabled()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
         surface.BuildNavMesh();
 
         surface.enabled = false;
@@ -49,45 +56,31 @@ public class NavMeshSurfaceTests
 
         surface.enabled = true;
         Assert.IsTrue(HasNavMeshAtOrigin());
-
-        GameObject.DestroyImmediate(go);
-        Assert.False(HasNavMeshAtOrigin());
     }
 
     [Test]
     public void CanBuildWithCustomArea()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
         surface.defaultArea = 4;
         var expectedAreaMask = 1 << 4;
 
         surface.BuildNavMesh();
         Assert.IsTrue(HasNavMeshAtOrigin(expectedAreaMask));
-
-        GameObject.DestroyImmediate(go);
     }
 
     [Test]
     public void CanBuildWithCustomAgentTypeID()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
         surface.agentTypeID = 1234;
         surface.BuildNavMesh();
 
         Assert.IsTrue(HasNavMeshAtOrigin(NavMesh.AllAreas, 1234));
-
-        GameObject.DestroyImmediate(go);
     }
 
     [Test]
     public void CanBuildCollidersAndIgnoreRenderMeshes()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        go.GetComponent<MeshRenderer>().enabled = false;
-
-        var surface = go.AddComponent<NavMeshSurface>();
+        plane.GetComponent<MeshRenderer>().enabled = false;
 
         surface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
         surface.BuildNavMesh();
@@ -96,17 +89,12 @@ public class NavMeshSurfaceTests
         surface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
         surface.BuildNavMesh();
         Assert.IsFalse(HasNavMeshAtOrigin());
-
-        GameObject.DestroyImmediate(go);
     }
 
     [Test]
     public void CanBuildRenderMeshesAndIgnoreColliders()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        go.GetComponent<Collider>().enabled = false;
-
-        var surface = go.AddComponent<NavMeshSurface>();
+        plane.GetComponent<Collider>().enabled = false;
 
         surface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
         surface.BuildNavMesh();
@@ -115,71 +103,48 @@ public class NavMeshSurfaceTests
         surface.useGeometry = NavMeshCollectGeometry.RenderMeshes;
         surface.BuildNavMesh();
         Assert.IsTrue(HasNavMeshAtOrigin());
-
-        GameObject.DestroyImmediate(go);
     }
 
     [Test]
     public void BuildIgnoresGeometryOutsideBounds()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.Volume;
         surface.center = new Vector3(20, 0, 0);
         surface.size = new Vector3(10, 10, 10);
 
         surface.BuildNavMesh();
         Assert.IsFalse(HasNavMeshAtOrigin());
-
-        GameObject.DestroyImmediate(go);
     }
 
     [Test]
     public void BuildIgnoresGeometrySiblings()
     {
-        var go = new GameObject();
-        var surface = go.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.Children;
-
-        var plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
 
         surface.BuildNavMesh();
         Assert.IsFalse(HasNavMeshAtOrigin());
-
-        GameObject.DestroyImmediate(go);
-        GameObject.DestroyImmediate(plane);
     }
 
     [Test]
     public void BuildUsesOnlyIncludedLayers()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
-        go.layer = 4;
+        plane.layer = 4;
         surface.layerMask = ~(1 << 4);
 
         surface.BuildNavMesh();
         Assert.IsFalse(HasNavMeshAtOrigin());
-
-        GameObject.DestroyImmediate(go);
     }
 
     [Test]
     public void DefaultSettingsMatchBuiltinSettings()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
         var bs = surface.GetBuildSettings();
         Assert.AreEqual(NavMesh.GetSettingsByIndex(0), bs);
-
-        GameObject.DestroyImmediate(go);
     }
 
     [Test]
     public void ActiveSurfacesContainsOnlyActiveAndEnabledSurface()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
         Assert.IsTrue(NavMeshSurface.activeSurfaces.Contains(surface));
         Assert.AreEqual(1, NavMeshSurface.activeSurfaces.Count);
 
@@ -188,38 +153,30 @@ public class NavMeshSurfaceTests
         Assert.AreEqual(0, NavMeshSurface.activeSurfaces.Count);
 
         surface.enabled = true;
-        go.SetActive(false);
+        surface.gameObject.SetActive(false);
         Assert.IsFalse(NavMeshSurface.activeSurfaces.Contains(surface));
         Assert.AreEqual(0, NavMeshSurface.activeSurfaces.Count);
-
-        GameObject.DestroyImmediate(go);
     }
 
     [UnityTest]
     public IEnumerator NavMeshMovesToSurfacePositionNextFrame()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        go.transform.position = new Vector3(100, 0, 0);
-        var surface = go.AddComponent<NavMeshSurface>();
-
+        plane.transform.position = new Vector3(100, 0, 0);
+        surface.transform.position = new Vector3(100, 0, 0);
         surface.BuildNavMesh();
         Assert.IsFalse(HasNavMeshAtOrigin());
 
-        go.transform.position = Vector3.zero;
+        surface.transform.position = Vector3.zero;
         Assert.IsFalse(HasNavMeshAtOrigin());
 
         yield return null;
 
         Assert.IsTrue(HasNavMeshAtOrigin());
-        GameObject.DestroyImmediate(go);
     }
 
     [UnityTest]
     public IEnumerator UpdatingAndAddingNavMesh()
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        var surface = go.AddComponent<NavMeshSurface>();
-
         var navmeshData = new NavMeshData();
         var oper = surface.UpdateNavMesh(navmeshData);
         Assert.IsFalse(HasNavMeshAtOrigin());
@@ -230,7 +187,6 @@ public class NavMeshSurfaceTests
         surface.AddData();
 
         Assert.IsTrue(HasNavMeshAtOrigin());
-        GameObject.DestroyImmediate(go);
     }
 
     public static bool HasNavMeshAtOrigin(int areaMask = NavMesh.AllAreas, int agentTypeID = 0)
