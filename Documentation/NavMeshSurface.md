@@ -1,4 +1,4 @@
-#NavMeshSurface
+# NavMeshSurface
 
 ![NavMeshSurface example](Images/NavMeshSurface-Example.png)
 
@@ -8,7 +8,7 @@ The preferred way to use the NavMeshSurface component is to create an empty Game
 
 The NavMeshSurface component can be also added to any game object. This is useful for cases where you want to use the Hierarchy to define which objects contribute to the NavMesh.
 
-##Parameters
+## Parameters
 * Agent Type – the agent type which will use this NavMesh Surface. The agent type is used for bake settings, as well as to match a NavMeshAgent to proper surface during pathfinding.
 * Collect Objects – defines on a high level which objects should be used for baking.
 	* All – use all active objects.
@@ -23,7 +23,7 @@ The main settings for the NavMesh Surface component allow you to filter the inpu
 
 Game Objects which have a NavMesh Agent or NavMesh Obstacle will be excluded from the baking process automatically. They are dynamic users of the navmesh – and hence should not contribute to the navmesh building.
 
-##Advanced Settings
+## Advanced Settings
 
 ![NavMeshSurface advanced](Images/NavMeshSurface-Advanced.png)
 

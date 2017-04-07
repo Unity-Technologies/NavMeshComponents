@@ -1,4 +1,4 @@
-#High-level NavMesh Building Components
+# High-level NavMesh Building Components
 
 Here we introduce four high level components for the navigation system:
 
@@ -9,7 +9,7 @@ Here we introduce four high level components for the navigation system:
 
 These components comprise the high level controls for building and using NavMeshes at runtime as well as edit time.
 
-##Techniques and Patterns
+## Techniques and Patterns
 * [Connecting NavMesh Surfaces](ConnectingSurfaces.md) using the NavMeshLink compoenent.
 
 

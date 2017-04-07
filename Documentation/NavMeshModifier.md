@@ -1,4 +1,4 @@
-#NavMeshModifier
+# NavMeshModifier
 
 ![NavMeshModifier example](Images/NavMeshModifier-Example.png)
 
@@ -10,7 +10,7 @@ The NavMesh Modifier affects the NavMesh generation process, this means the NavM
 
 Note: This component is a replacement for the old setting which could be enabled from the Navigation window Objects tab as well as the static flags dropdown on the GameObject. This component is available for baking at runtime, whereas the static flags are available in the editor only.
 
-##Parameters
+## Parameters
 * Ignore From Build – when checked, the object and all if its’ children are skipped from the build process.
 * Override Area Type – when checked the area type will be overridden for the game object containing the Modifier and all of it’s children.
 	* Area Type – new area type to apply

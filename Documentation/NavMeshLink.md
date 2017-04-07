@@ -1,4 +1,4 @@
-#NavMeshLink
+# NavMeshLink
 
 ![NavMeshLink example](Images/NavMeshLink-Example.png)
 

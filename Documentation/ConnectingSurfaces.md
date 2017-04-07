@@ -1,4 +1,4 @@
-#Connecting NavMesh Surfaces
+# Connecting NavMesh Surfaces
 
 ![Connecting surfaces example](Images/ConnectingSurfaces-Example.png)
 
