@@ -21,6 +21,7 @@ Clone or download this repository and open the project using the feature build.
 Alternatively, you can copy the contents of `Assets/NavMeshComponents` to an existing project.
 
 Additional examples are available in the `Assets/Examples` folder.
+The examples are provided "as is". They are neither generic nor robust, but serve as inspiration.
 
 _Note: During the beta cycle features and API are subject to change. Back up existing projects before using.
 **Make sure to backup an existing project before opening it with this build**_.
