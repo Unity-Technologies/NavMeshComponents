@@ -1,3 +1,4 @@
+#if UNITY_EDITOR || UNITY_STANDALONE
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.TestTools;
@@ -67,3 +68,4 @@ public class NavMeshSurfaceModifierVolumeTests
         Assert.IsTrue(NavMeshSurfaceTests.HasNavMeshAtOrigin(expectedAreaMask));
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR || UNITY_STANDALONE
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.TestTools;
@@ -198,3 +199,4 @@ public class NavMeshSurfaceTests
         return NavMesh.SamplePosition(Vector3.zero, out hit, 0.1f, filter);
     }
 }
+#endif

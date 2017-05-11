@@ -1,3 +1,4 @@
+#if UNITY_EDITOR || UNITY_STANDALONE
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.TestTools;
@@ -108,3 +109,4 @@ public class NavMeshSurfaceModifierTests
         GameObject.DestroyImmediate(siblingPlane);
     }
 }
+#endif
