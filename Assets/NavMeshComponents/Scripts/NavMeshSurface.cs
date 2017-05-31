@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.AI;
 
 namespace UnityEngine.AI
 {
@@ -419,6 +420,14 @@ namespace UnityEngine.AI
                     m_TileSize = kMinTileSize;
                 if (m_TileSize > kMaxTileSize)
                     m_TileSize = kMaxTileSize;
+            }
+        }
+
+        public void DrawGizmo()
+        {
+            if (m_NavMeshDataInstance.valid)
+            {
+                NavMeshEditorHelpers.DrawSurface(m_NavMeshDataInstance);
             }
         }
 #endif
