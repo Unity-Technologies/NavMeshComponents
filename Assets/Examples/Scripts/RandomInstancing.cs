@@ -17,7 +17,6 @@ public class RandomInstancing : MonoBehaviour
     public float m_Size = 100.0f;
 
     List<Transform> m_Instances = new List<Transform>();
-    int m_Seed;
     int m_Used;
     int m_LocX, m_LocZ;
 
@@ -26,6 +25,7 @@ public class RandomInstancing : MonoBehaviour
         for (int i = 0; i < m_PoolSize; ++i)
         {
             var go = Instantiate(m_Prefab, Vector3.zero, Quaternion.identity) as GameObject;
+            go.SetActive(false);
             m_Instances.Add(go.transform);
         }
     }
@@ -67,36 +67,47 @@ public class RandomInstancing : MonoBehaviour
         {
             for (var j = z - 2; j <= z + 2; ++j)
             {
-                if (m_Used >= m_PoolSize - 1)
+                var count = UpdateTileInstances(i, j);
+                if (count != m_InstancesPerTile)
                     return;
-                UpdateTileInstances(i, j);
             }
         }
+
+        // Deactivate the remaining active elements in the pool.
+        // Here we assume all active elements are contiguous and first in the list.
+        for (int i = m_Used; i < m_PoolSize && m_Instances[i].gameObject.activeSelf; ++i)
+            m_Instances[i].gameObject.SetActive(false);
     }
 
-    void UpdateTileInstances(int i, int j)
+    int UpdateTileInstances(int i, int j)
     {
-        m_Seed = Hash2(i, j) ^ m_BaseHash;
-        for (var k = 0; k < m_InstancesPerTile; ++k)
+        var seed = Hash2(i, j) ^ m_BaseHash;
+        var count = System.Math.Min(m_InstancesPerTile, m_PoolSize - m_Used);
+        for (var end = m_Used + count; m_Used < end; ++m_Used)
         {
             float x = 0;
             float y = 0;
 
             if (m_RandomPosition)
             {
-                x = Random();
-                y = Random();
+                x = Random(ref seed);
+                y = Random(ref seed);
             }
             var pos = new Vector3((i + x) * m_Size, m_Height, (j + y) * m_Size);
 
             if (m_RandomOrientation)
             {
-                float r = 360.0f * Random();
+                float r = 360.0f * Random(ref seed);
                 m_Instances[m_Used].rotation = Quaternion.AngleAxis(r, Vector3.up);
             }
             m_Instances[m_Used].position = pos;
-            m_Used++;
+            m_Instances[m_Used].gameObject.SetActive(true);
         }
+
+        if (count < m_InstancesPerTile)
+            Debug.LogWarning("Pool exhausted", this);
+
+        return count;
     }
 
     static int Hash2(int i, int j)
@@ -104,14 +115,14 @@ public class RandomInstancing : MonoBehaviour
         return (i * 73856093) ^ (j * 19349663);
     }
 
-    float Random()
+    static float Random(ref int seed)
     {
-        m_Seed = (m_Seed ^ 123459876);
-        var k = m_Seed / 127773;
-        m_Seed = 16807 * (m_Seed - k * 127773) - 2836 * k;
-        if (m_Seed < 0) m_Seed = m_Seed + 2147483647;
-        float ran0 = m_Seed * 1.0f / 2147483647.0f;
-        m_Seed = (m_Seed ^ 123459876);
+        seed = (seed ^ 123459876);
+        var k = seed / 127773;
+        seed = 16807 * (seed - k * 127773) - 2836 * k;
+        if (seed < 0) seed = seed + 2147483647;
+        float ran0 = seed * 1.0f / 2147483647.0f;
+        seed = (seed ^ 123459876);
         return ran0;
     }
 }
