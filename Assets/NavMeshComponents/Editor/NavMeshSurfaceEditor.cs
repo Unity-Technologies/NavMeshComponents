@@ -56,8 +56,7 @@ namespace UnityEditor.AI
         static Color s_HandleColorSelected = new Color(127f, 214f, 244f, 210f) / 255;
         static Color s_HandleColorDisabled = new Color(127f * 0.75f, 214f * 0.75f, 244f * 0.75f, 100f) / 255;
 
-        static int s_HandleControlIDHint = typeof(NavMeshSurfaceEditor).Name.GetHashCode();
-        BoxBoundsHandle m_BoundsHandle = new BoxBoundsHandle(s_HandleControlIDHint);
+        BoxBoundsHandle m_BoundsHandle = new BoxBoundsHandle();
 
         bool editingCollider
         {
