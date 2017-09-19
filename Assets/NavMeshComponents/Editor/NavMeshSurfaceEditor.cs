@@ -4,8 +4,8 @@ using System.Linq;
 using UnityEditor.IMGUI.Controls;
 using UnityEditor.SceneManagement;
 using UnityEditorInternal;
-using UnityEngine.AI;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace UnityEditor.AI
 {
@@ -25,6 +25,7 @@ namespace UnityEditor.AI
         SerializedProperty m_TileSize;
         SerializedProperty m_UseGeometry;
         SerializedProperty m_VoxelSize;
+        SerializedProperty m_NavMeshData;
 
         class Styles
         {
@@ -77,6 +78,7 @@ namespace UnityEditor.AI
             m_TileSize = serializedObject.FindProperty("m_TileSize");
             m_UseGeometry = serializedObject.FindProperty("m_UseGeometry");
             m_VoxelSize = serializedObject.FindProperty("m_VoxelSize");
+            m_NavMeshData = serializedObject.FindProperty("m_NavMeshData");
 
             NavMeshVisualizationSettings.showNavigation++;
         }
@@ -108,7 +110,7 @@ namespace UnityEditor.AI
             AssetDatabase.CreateAsset(surface.navMeshData, combinedAssetPath);
         }
 
-        static NavMeshData GetNavMeshAssetToDelete(NavMeshSurface navSurface)
+        static NavMeshData GetExistingNavMeshAsset(NavMeshSurface navSurface)
         {
             var prefabType = PrefabUtility.GetPrefabType(navSurface);
             if (prefabType == PrefabType.PrefabInstance || prefabType == PrefabType.DisconnectedPrefabInstance)
@@ -123,7 +125,7 @@ namespace UnityEditor.AI
 
         void ClearSurface(NavMeshSurface navSurface)
         {
-            var assetToDelete = GetNavMeshAssetToDelete(navSurface);
+            var assetToDelete = GetExistingNavMeshAsset(navSurface);
             navSurface.RemoveData();
             navSurface.navMeshData = null;
             EditorUtility.SetDirty(navSurface);
@@ -141,6 +143,11 @@ namespace UnityEditor.AI
                 s_Styles = new Styles();
 
             serializedObject.Update();
+
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUILayout.ObjectField(m_NavMeshData);
+            }
 
             var bs = NavMesh.GetSettingsByID(m_AgentTypeID.intValue);
 
@@ -236,6 +243,7 @@ namespace UnityEditor.AI
                 }
 
                 EditorGUILayout.Space();
+
                 EditorGUI.indentLevel--;
             }
 
@@ -351,6 +359,11 @@ namespace UnityEditor.AI
                 , surface.transform.position, surface.transform.rotation);
         }
 
+        static void ReplaceData(NavMeshData to, NavMeshData from)
+        {
+            EditorUtility.CopySerializedIfDifferent(from, to);
+        }
+
         static void UpdateAsyncBuildOperations()
         {
             foreach (var oper in s_BakeOperations)
@@ -361,15 +374,21 @@ namespace UnityEditor.AI
                 if (oper.bakeOperation.isDone)
                 {
                     var surface = oper.surface;
-                    var delete = GetNavMeshAssetToDelete(surface);
-                    if (delete != null)
-                        AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(delete));
-
                     surface.RemoveData();
-                    surface.navMeshData = oper.bakeData;
+
+                    var existing = GetExistingNavMeshAsset(surface);
+                    if (existing != null)
+                    {
+                        ReplaceData(existing, oper.bakeData);
+                    }
+                    else
+                    {
+                        surface.navMeshData = oper.bakeData;
+                        CreateNavMeshAsset(surface);
+                    }
                     if (surface.isActiveAndEnabled)
                         surface.AddData();
-                    CreateNavMeshAsset(surface);
+
                     EditorSceneManager.MarkSceneDirty(surface.gameObject.scene);
                 }
             }
