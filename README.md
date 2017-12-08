@@ -1,4 +1,4 @@
-> This `master` branch requires **Unity 2017.1** or a newer released version. For older or future versions of Unity please use a matching branch ([5.6](tree/5.6), [2018.1](tree/2018.1)).
+> This `master` branch requires **Unity 2017.1** or a newer released version. For older or future versions of Unity please use a matching branch ([5.6](../../tree/5.6), [2018.1](../../tree/2018.1)).
 
 # Components for Runtime NavMesh Building
 
