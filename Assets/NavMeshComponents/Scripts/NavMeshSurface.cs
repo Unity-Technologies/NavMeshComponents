@@ -40,6 +40,10 @@ namespace UnityEngine.AI
         public NavMeshCollectGeometry useGeometry { get { return m_UseGeometry; } set { m_UseGeometry = value; } }
 
         [SerializeField]
+        bool m_ignoreTriggers = true;
+        public bool ignoreTriggers { get { return m_ignoreTriggers; } set { m_ignoreTriggers = true; } }
+
+        [SerializeField]
         int m_DefaultArea;
         public int defaultArea { get { return m_DefaultArea; } set { m_DefaultArea = value; } }
 
@@ -286,6 +290,9 @@ namespace UnityEngine.AI
 
             if (m_IgnoreNavMeshObstacle)
                 sources.RemoveAll((x) => (x.component != null && x.component.gameObject.GetComponent<NavMeshObstacle>() != null));
+
+            if (m_ignoreTriggers && m_UseGeometry == NavMeshCollectGeometry.PhysicsColliders)
+                sources.RemoveAll((x) => (x.component != null && x.component is Collider && ((Collider) x.component).isTrigger));
 
             AppendModifierVolumes(ref sources);
 

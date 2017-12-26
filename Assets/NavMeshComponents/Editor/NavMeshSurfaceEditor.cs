@@ -24,6 +24,7 @@ namespace UnityEditor.AI
         SerializedProperty m_Size;
         SerializedProperty m_TileSize;
         SerializedProperty m_UseGeometry;
+        SerializedProperty m_ignoreTriggers;
         SerializedProperty m_VoxelSize;
 
         class Styles
@@ -76,6 +77,7 @@ namespace UnityEditor.AI
             m_Size = serializedObject.FindProperty("m_Size");
             m_TileSize = serializedObject.FindProperty("m_TileSize");
             m_UseGeometry = serializedObject.FindProperty("m_UseGeometry");
+            m_ignoreTriggers = serializedObject.FindProperty("m_ignoreTriggers");
             m_VoxelSize = serializedObject.FindProperty("m_VoxelSize");
 
             NavMeshVisualizationSettings.showNavigation++;
@@ -171,6 +173,12 @@ namespace UnityEditor.AI
 
             EditorGUILayout.PropertyField(m_LayerMask, s_Styles.m_LayerMask);
             EditorGUILayout.PropertyField(m_UseGeometry);
+            if ((NavMeshCollectGeometry)m_UseGeometry.enumValueIndex == NavMeshCollectGeometry.PhysicsColliders)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(m_ignoreTriggers);
+                EditorGUI.indentLevel--;
+            }
 
             EditorGUILayout.Space();
 
