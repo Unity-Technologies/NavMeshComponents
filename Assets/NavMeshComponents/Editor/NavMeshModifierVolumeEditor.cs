@@ -39,11 +39,18 @@ namespace UnityEditor.AI
             NavMeshVisualizationSettings.showNavigation--;
         }
 
+        Bounds GetBounds()
+        {
+            var navModifier = (NavMeshModifierVolume)target;
+            return new Bounds(navModifier.transform.position, navModifier.size);
+        }
+
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
-            InspectorEditButtonGUI();
+            EditMode.DoEditModeInspectorModeButton(EditMode.SceneViewEditMode.Collider, "Edit Volume",
+                EditorGUIUtility.IconContent("EditCollider"), GetBounds, this);
 
             EditorGUILayout.PropertyField(m_Size);
             EditorGUILayout.PropertyField(m_Center);
@@ -97,20 +104,6 @@ namespace UnityEditor.AI
             }
 
             Gizmos.DrawIcon(navModifier.transform.position, "NavMeshModifierVolume Icon", true);
-        }
-
-        void InspectorEditButtonGUI()
-        {
-            var navModifier = (NavMeshModifierVolume)target;
-            var bounds = new Bounds(navModifier.transform.position, navModifier.size);
-
-            EditMode.DoEditModeInspectorModeButton(
-                EditMode.SceneViewEditMode.Collider,
-                "Edit Volume",
-                EditorGUIUtility.IconContent("EditCollider"),
-                bounds,
-                this
-                );
         }
 
         void OnSceneGUI()
