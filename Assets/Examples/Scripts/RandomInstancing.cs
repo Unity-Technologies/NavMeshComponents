@@ -42,7 +42,7 @@ public class RandomInstancing : MonoBehaviour
         for (int i = 0; i < m_Instances.Count; ++i)
         {
             if (m_Instances[i])
-                DestroyObject(m_Instances[i].gameObject);
+                Destroy(m_Instances[i].gameObject);
         }
         m_Instances.Clear();
     }
