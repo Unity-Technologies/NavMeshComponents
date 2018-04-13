@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace UnityEngine.AI
 {
@@ -252,6 +254,7 @@ namespace UnityEngine.AI
                 modifiers = NavMeshModifier.activeModifiers;
             }
 
+            var scene = gameObject.scene;
             foreach (var m in modifiers)
             {
                 if ((m_LayerMask & (1 << m.gameObject.layer)) == 0)
@@ -268,17 +271,17 @@ namespace UnityEngine.AI
 
             if (m_CollectObjects == CollectObjects.All)
             {
-                NavMeshBuilder.CollectSources(null, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, sources);
+                NavMeshBuilder.CollectSources(null, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, scene, sources);
             }
             else if (m_CollectObjects == CollectObjects.Children)
             {
-                NavMeshBuilder.CollectSources(transform, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, sources);
+                NavMeshBuilder.CollectSources(transform, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, scene, sources);
             }
             else if (m_CollectObjects == CollectObjects.Volume)
             {
                 Matrix4x4 localToWorld = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
                 var worldBounds = GetWorldBounds(localToWorld, new Bounds(m_Center, m_Size));
-                NavMeshBuilder.CollectSources(worldBounds, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, sources);
+                NavMeshBuilder.CollectSources(worldBounds, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, scene, sources);
             }
 
             if (m_IgnoreNavMeshAgent)
@@ -368,8 +371,9 @@ namespace UnityEngine.AI
                 return false;
 
             // Prefab parent owns the asset reference
-            var prefabType = UnityEditor.PrefabUtility.GetPrefabType(this);
-            if (prefabType == UnityEditor.PrefabType.Prefab)
+            var isInPreviewScene = EditorSceneManager.IsPreviewSceneObject(this);
+            var isPersistentObject = EditorUtility.IsPersistent(this);
+            if (isInPreviewScene || isPersistentObject)
                 return false;
 
             // An instance can share asset reference only with its prefab parent
