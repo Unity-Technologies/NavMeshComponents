@@ -296,6 +296,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsNotNull(instanceSurface);
         instanceSurface.defaultArea = k_RedArea;
         instanceSurface.BuildNavMesh();
+        //CreateNavMeshAsset(instanceSurface);
         var instanceNavMeshData = instanceSurface.navMeshData;
 
         TestNavMeshExistsAloneAtPosition(k_RedArea, Vector3.zero);
@@ -415,6 +416,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsNotNull(instanceSurface);
         instanceSurface.defaultArea = k_RedArea;
         instanceSurface.BuildNavMesh();
+        //CreateNavMeshAsset(instanceSurface);
         var instanceNavMeshData = instanceSurface.navMeshData;
 
         TestNavMeshExistsAloneAtPosition(k_RedArea, Vector3.zero);
@@ -458,6 +460,7 @@ public class NavMeshSurfaceInPrefabTests
         var initialPrefabNavMeshData = prefabSurface.navMeshData;
         prefabSurface.defaultArea = k_GrayArea;
         prefabSurface.BuildNavMesh();
+        //CreateNavMeshAsset(prefabSurface);
         var rebuiltPrefabNavMeshData = prefabSurface.navMeshData;
         Assert.IsNotNull(rebuiltPrefabNavMeshData);
         Assert.AreNotSame(initialPrefabNavMeshData, rebuiltPrefabNavMeshData);
@@ -470,6 +473,56 @@ public class NavMeshSurfaceInPrefabTests
         var prefabNavMeshData = prefabSurfaceReopened.navMeshData;
         Assert.AreSame(initialPrefabNavMeshData, prefabNavMeshData);
         Assert.AreNotSame(rebuiltPrefabNavMeshData, prefabNavMeshData);
+
+        StageManager.instance.GoToMainStage();
+
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NavMeshSurfacePrefab_WhenRebakedButNotSaved_TheRebakedAssetNoLongerExists()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
+        AssetDatabase.OpenAsset(prefab);
+        var prefabScene = StageManager.instance.GetCurrentPrefabScene();
+        var prefabSurface = prefabScene.prefabInstanceRoot.GetComponent<NavMeshSurface>();
+        prefabSurface.defaultArea = k_GrayArea;
+        prefabSurface.BuildNavMesh();
+        CreateNavMeshAsset(prefabSurface);
+        var assetFolderPath = GetAndEnsureTargetPath(prefabSurface);
+        var navMeshAssetName = prefabSurface.navMeshData.name + ".asset";
+        var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
+
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} exists.", combinedAssetPath);
+
+        StageManager.instance.GoToMainStage();
+
+        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} still exists after discarding the changes.", combinedAssetPath);
+
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NavMeshSurfacePrefab_WhenRebaked_TheOldAssetExistsUntilSaving()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
+        AssetDatabase.OpenAsset(prefab);
+        var prefabScene = StageManager.instance.GetCurrentPrefabScene();
+        var prefabSurface = prefabScene.prefabInstanceRoot.GetComponent<NavMeshSurface>();
+        var assetFolderPath = GetAndEnsureTargetPath(prefabSurface);
+        var navMeshAssetName = prefabSurface.navMeshData.name + ".asset";
+        var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
+
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} exists.", combinedAssetPath);
+
+        prefabSurface.defaultArea = k_GrayArea;
+        prefabSurface.BuildNavMesh();
+        CreateNavMeshAsset(prefabSurface);
+
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} exists.", combinedAssetPath);
+
+        prefabScene.SavePrefab();
+        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} still exists after saving.", combinedAssetPath);
 
         StageManager.instance.GoToMainStage();
 
@@ -621,6 +674,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsNotNull(instanceSurface);
         instanceSurface.defaultArea = k_RedArea;
         instanceSurface.BuildNavMesh();
+        //CreateNavMeshAsset(instanceSurface);
 
         TestNavMeshExistsAloneAtPosition(k_RedArea, Vector3.zero);
 
