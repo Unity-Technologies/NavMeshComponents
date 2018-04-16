@@ -493,11 +493,11 @@ public class NavMeshSurfaceInPrefabTests
         var navMeshAssetName = prefabSurface.navMeshData.name + ".asset";
         var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} exists.", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file exists. ({0})", combinedAssetPath);
 
         StageManager.instance.GoToMainStage();
 
-        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} still exists after discarding the changes.", combinedAssetPath);
+        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "NavMeshData file still exists after discarding the changes. ({0})", combinedAssetPath);
 
         yield return null;
     }
@@ -513,16 +513,16 @@ public class NavMeshSurfaceInPrefabTests
         var navMeshAssetName = prefabSurface.navMeshData.name + ".asset";
         var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} exists.", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file exists. ({0})", combinedAssetPath);
 
         prefabSurface.defaultArea = k_GrayArea;
         prefabSurface.BuildNavMesh();
         CreateNavMeshAsset(prefabSurface);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} exists.", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file exists. ({0})", combinedAssetPath);
 
         prefabScene.SavePrefab();
-        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "NavMeshData file {0} still exists after saving.", combinedAssetPath);
+        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "NavMeshData file still exists after saving. ({0})", combinedAssetPath);
 
         StageManager.instance.GoToMainStage();
 
@@ -564,6 +564,42 @@ public class NavMeshSurfaceInPrefabTests
 #if !NAVMESHSURFACE_PREFAB_CLEANUP_ALL_ONCE
         AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(initialPrefabNavMeshData));
 #endif
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NavMeshSurfacePrefab_AfterModifiedInstanceAppliedBack_TheOldAssetNoLongerExists()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
+        var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+        Assert.IsNotNull(instance);
+        instance.name = "PrefabInstance";
+        TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
+
+        var instanceSurface = instance.GetComponent<NavMeshSurface>();
+        Assert.IsNotNull(instanceSurface);
+
+        var assetFolderPath = GetAndEnsureTargetPath(instanceSurface);
+        var navMeshAssetName = instanceSurface.navMeshData.name + ".asset";
+        var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
+
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "Prefab's NavMeshData file exists. ({0})", combinedAssetPath);
+
+        instanceSurface.defaultArea = k_RedArea;
+        instanceSurface.BuildNavMesh();
+        CreateNavMeshAsset(instanceSurface);
+
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath),
+            "Prefab's NavMeshData file exists after instance has changed. ({0})", combinedAssetPath);
+
+        PrefabUtility.ApplyPrefabInstance(instance);
+
+        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath),
+            "Prefab's NavMeshData file still exists after the changes from the instance have been applied back to the prefab. ({0})",
+            combinedAssetPath);
+
+        Object.DestroyImmediate(instance);
+
         yield return null;
     }
 
@@ -727,7 +763,7 @@ public class NavMeshSurfaceInPrefabTests
 
         var posNearby = new Vector3(20,0,0);
         Assert.IsFalse(HasNavMeshAtPosition(posNearby, 1 << k_RedArea),
-            "NavMesh with the prefab's area {0} exists at position {1}, outside the prefab's plane.",
+            "NavMesh with the prefab's area exists at position {1}, outside the prefab's plane. ({0})",
             k_RedArea, posNearby);
 
         Object.DestroyImmediate(instance);
