@@ -198,7 +198,7 @@ public class NavMeshSurfaceInPrefabTests
     }
 
     [UnityTest]
-    public IEnumerator NavMeshSurfacePrefab_WhenEmptyAndInstantiated_HasEmptyNavMeshData()
+    public IEnumerator NavMeshSurfacePrefab_WhenEmptyAndInstantiated_InstanceHasEmptyNavMeshData()
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
@@ -213,6 +213,7 @@ public class NavMeshSurfaceInPrefabTests
 #if !NAVMESHSURFACE_PREFAB_CLEANUP_ALL_ONCE
         DeleteNavMeshAsset(prefabSurface);
 #endif
+        prefabSurface.RemoveData();
         prefabSurface.navMeshData = null;
         prefabScene.SavePrefab();
 
@@ -367,12 +368,40 @@ public class NavMeshSurfaceInPrefabTests
         yield return null;
     }
 
-    // this would be not much more than NavMeshSurfacePrefab_WhenInstanceCleared_InstanceHasEmptyNavMeshData
-    //[UnityTest]
-    //public IEnumerator NavMeshSurfacePrefab_WhenInstanceDeleted_PrefabKeepsNavMeshData()
-    //{
-    //    yield return null;
-    //}
+    [UnityTest]
+    public IEnumerator NavMeshSurfacePrefab_WhenInstanceCleared_PrefabKeepsNavMeshData()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
+        var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+        Assert.IsNotNull(instance);
+        instance.name = "PrefabInstance";
+
+        var instanceSurface = instance.GetComponent<NavMeshSurface>();
+        Assert.IsNotNull(instanceSurface);
+        var initialPrefabNavMeshData = instanceSurface.navMeshData;
+
+        instanceSurface.RemoveData();
+        instanceSurface.navMeshData = null;
+
+        var expectedAreaMask = 1 << k_PrefabDefaultArea;
+        Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, expectedAreaMask));
+
+        AssetDatabase.OpenAsset(prefab);
+        var prefabScene = StageManager.instance.GetCurrentPrefabScene();
+        var prefabSurface = prefabScene.prefabInstanceRoot.GetComponent<NavMeshSurface>();
+        var prefabNavMeshData = prefabSurface.navMeshData;
+        Assert.IsNotNull(prefabNavMeshData);
+        Assert.AreSame(initialPrefabNavMeshData, prefabNavMeshData);
+
+        StageManager.instance.GoToMainStage();
+
+        Object.DestroyImmediate(instance);
+
+#if !NAVMESHSURFACE_PREFAB_CLEANUP_ALL_ONCE
+        AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(initialPrefabNavMeshData));
+#endif
+        yield return null;
+    }
 
     [UnityTest]
     public IEnumerator NavMeshSurfacePrefab_WhenRebakedButInstanceModified_DoesNotChangeInstance()
@@ -448,7 +477,7 @@ public class NavMeshSurfaceInPrefabTests
     }
 
     [UnityTest]
-    public IEnumerator NavMeshSurfacePrefab_WhenRebakedAndAutoSaved_HasTheNewNavMeshData()
+    public IEnumerator NavMeshSurfacePrefab_WhenRebakedAndAutoSaved_InstanceHasTheNewNavMeshData()
     {
         var wasAutoSave = StageManager.instance.autoSave;
         StageManager.instance.autoSave = true;
@@ -486,7 +515,7 @@ public class NavMeshSurfaceInPrefabTests
     }
 
     [UnityTest]
-    public IEnumerator NavMeshSurfacePrefab_WhenModifiedInstanceAppliedBack_UpdatesAccordingToInstance()
+    public IEnumerator NavMeshSurfacePrefab_AfterModifiedInstanceAppliedBack_UpdatedAccordingToInstance()
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instanceOne = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
@@ -533,6 +562,45 @@ public class NavMeshSurfaceInPrefabTests
 
         Object.DestroyImmediate(instanceOne);
         Object.DestroyImmediate(instanceTwo);
+
+#if !NAVMESHSURFACE_PREFAB_CLEANUP_ALL_ONCE
+        AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(initialPrefabNavMeshData));
+#endif
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NavMeshSurfacePrefab_AfterClearedInstanceAppliedBack_HasEmptyData()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
+        var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+        Assert.IsNotNull(instance);
+        instance.name = "PrefabInstance";
+        TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
+
+        var instanceSurface = instance.GetComponent<NavMeshSurface>();
+        Assert.IsNotNull(instanceSurface);
+
+#if !NAVMESHSURFACE_PREFAB_CLEANUP_ALL_ONCE
+        var initialPrefabNavMeshData = instanceSurface.navMeshData;
+#endif
+        instanceSurface.RemoveData();
+        instanceSurface.navMeshData = null;
+
+        var expectedAreaMask = 1 << k_PrefabDefaultArea;
+        Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, expectedAreaMask));
+
+        PrefabUtility.ApplyPrefabInstance(instance);
+
+        AssetDatabase.OpenAsset(prefab);
+        var prefabScene = StageManager.instance.GetCurrentPrefabScene();
+        var prefabSurface = prefabScene.prefabInstanceRoot.GetComponent<NavMeshSurface>();
+
+        Assert.IsNull(prefabSurface.navMeshData);
+
+        StageManager.instance.GoToMainStage();
+
+        Object.DestroyImmediate(instance);
 
 #if !NAVMESHSURFACE_PREFAB_CLEANUP_ALL_ONCE
         AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(initialPrefabNavMeshData));
