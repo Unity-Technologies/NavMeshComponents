@@ -493,7 +493,7 @@ public class NavMeshSurfaceInPrefabTests
         var navMeshAssetName = prefabSurface.navMeshData.name + ".asset";
         var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file exists. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file must exist. ({0})", combinedAssetPath);
 
         StageManager.instance.GoToMainStage();
 
@@ -513,13 +513,13 @@ public class NavMeshSurfaceInPrefabTests
         var navMeshAssetName = prefabSurface.navMeshData.name + ".asset";
         var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file exists. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file must exist. ({0})", combinedAssetPath);
 
         prefabSurface.defaultArea = k_GrayArea;
         prefabSurface.BuildNavMesh();
         CreateNavMeshAsset(prefabSurface);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file exists. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "The initial NavMeshData file must exist after prefab rebake. ({0})", combinedAssetPath);
 
         prefabScene.SavePrefab();
         Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "NavMeshData file still exists after saving. ({0})", combinedAssetPath);
@@ -583,14 +583,14 @@ public class NavMeshSurfaceInPrefabTests
         var navMeshAssetName = instanceSurface.navMeshData.name + ".asset";
         var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "Prefab's NavMeshData file exists. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "Prefab's NavMeshData file must exist. ({0})", combinedAssetPath);
 
         instanceSurface.defaultArea = k_RedArea;
         instanceSurface.BuildNavMesh();
         CreateNavMeshAsset(instanceSurface);
 
         Assert.IsTrue(System.IO.File.Exists(combinedAssetPath),
-            "Prefab's NavMeshData file exists after instance has changed. ({0})", combinedAssetPath);
+            "Prefab's NavMeshData file exists after the instance has changed. ({0})", combinedAssetPath);
 
         PrefabUtility.ApplyPrefabInstance(instance);
 
@@ -717,6 +717,36 @@ public class NavMeshSurfaceInPrefabTests
         PrefabUtility.RevertPrefabInstance(instance);
 
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
+
+        Object.DestroyImmediate(instance);
+
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator NavMeshSurfacePrefab_WhenInstanceRevertsBack_TheInstanceAssetNoLongerExists()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
+        var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+        Assert.IsNotNull(instance);
+        instance.name = "PrefabInstance";
+        TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
+
+        var instanceSurface = instance.GetComponent<NavMeshSurface>();
+        Assert.IsNotNull(instanceSurface);
+        instanceSurface.defaultArea = k_RedArea;
+        instanceSurface.BuildNavMesh();
+        CreateNavMeshAsset(instanceSurface);
+
+        var assetFolderPath = GetAndEnsureTargetPath(instanceSurface);
+        var navMeshAssetName = instanceSurface.navMeshData.name + ".asset";
+        var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
+
+        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "Instance's NavMeshData file must exist. ({0})", combinedAssetPath);
+
+        PrefabUtility.RevertPrefabInstance(instance);
+
+        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "Instance's NavMeshData file still exists after revert. ({0})", combinedAssetPath);
 
         Object.DestroyImmediate(instance);
 
