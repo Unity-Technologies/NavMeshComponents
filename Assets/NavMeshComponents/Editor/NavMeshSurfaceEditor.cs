@@ -86,7 +86,7 @@ namespace UnityEditor.AI
             NavMeshVisualizationSettings.showNavigation--;
         }
 
-        static string GetAndEnsureTargetPath(NavMeshSurface surface)
+        public static string GetAndEnsureTargetPath(NavMeshSurface surface)
         {
             // Create directory for the asset if it does not exist yet.
             var activeScenePath = surface.gameObject.scene.path;
@@ -120,7 +120,7 @@ namespace UnityEditor.AI
             return navSurface.navMeshData;
         }
 
-        void ClearSurface(NavMeshSurface navSurface)
+        static void ClearSurface(NavMeshSurface navSurface)
         {
             var assetToDelete = GetNavMeshAssetToDelete(navSurface);
             navSurface.RemoveData();
@@ -232,7 +232,7 @@ namespace UnityEditor.AI
                     if (!m_OverrideTileSize.hasMultipleDifferentValues)
                     {
                         if (m_OverrideTileSize.boolValue)
-                            EditorGUILayout.HelpBox("Tile size controls the how local the changes to the world are (rebuild or carve). Small tile size allows more local changes, while potentially generating more data in overal.", MessageType.None);
+                            EditorGUILayout.HelpBox("Tile size controls the how local the changes to the world are (rebuild or carve). Small tile size allows more local changes, while potentially generating more data overall.", MessageType.None);
                     }
                     EditorGUI.indentLevel--;
                 }
@@ -292,27 +292,13 @@ namespace UnityEditor.AI
                 GUILayout.Space(EditorGUIUtility.labelWidth);
                 if (GUILayout.Button("Clear"))
                 {
-                    foreach (NavMeshSurface s in targets)
-                        ClearSurface(s);
+                    ClearSurfaces(targets);
                     SceneView.RepaintAll();
                 }
 
                 if (GUILayout.Button("Bake"))
                 {
-                    // Remove first to avoid double registration of the callback
-                    EditorApplication.update -= UpdateAsyncBuildOperations;
-                    EditorApplication.update += UpdateAsyncBuildOperations;
-
-                    foreach (NavMeshSurface surf in targets)
-                    {
-                        var oper = new AsyncBakeOperation();
-
-                        oper.bakeData = InitializeBakeData(surf);
-                        oper.bakeOperation = surf.UpdateNavMesh(oper.bakeData);
-                        oper.surface = surf;
-
-                        s_BakeOperations.Add(oper);
-                    }
+                    StartBakingSurfaces(targets);
                 }
 
                 GUILayout.EndHorizontal();
@@ -352,6 +338,24 @@ namespace UnityEditor.AI
             }
         }
 
+        public static void StartBakingSurfaces(UnityEngine.Object[] surfaces)
+        {
+            // Remove first to avoid double registration of the callback
+            EditorApplication.update -= UpdateAsyncBuildOperations;
+            EditorApplication.update += UpdateAsyncBuildOperations;
+
+            foreach (NavMeshSurface surf in surfaces)
+            {
+                var oper = new AsyncBakeOperation();
+
+                oper.bakeData = InitializeBakeData(surf);
+                oper.bakeOperation = surf.UpdateNavMesh(oper.bakeData);
+                oper.surface = surf;
+
+                s_BakeOperations.Add(oper);
+            }
+        }
+
         static NavMeshData InitializeBakeData(NavMeshSurface surface)
         {
             var emptySources = new List<NavMeshBuildSource>();
@@ -385,6 +389,26 @@ namespace UnityEditor.AI
             s_BakeOperations.RemoveAll(o => o.bakeOperation == null || o.bakeOperation.isDone);
             if (s_BakeOperations.Count == 0)
                 EditorApplication.update -= UpdateAsyncBuildOperations;
+        }
+        
+        public static bool IsSurfaceBaking(NavMeshSurface surface)
+        {
+            foreach (var oper in s_BakeOperations)
+            {
+                if (oper.surface == null || oper.bakeOperation == null)
+                    continue;
+
+                if (oper.surface == surface && !oper.bakeOperation.isDone)
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static void ClearSurfaces(UnityEngine.Object[] surfaces)
+        {
+            foreach (NavMeshSurface s in surfaces)
+                ClearSurface(s);
         }
 
         [DrawGizmo(GizmoType.Selected | GizmoType.Active | GizmoType.Pickable)]
