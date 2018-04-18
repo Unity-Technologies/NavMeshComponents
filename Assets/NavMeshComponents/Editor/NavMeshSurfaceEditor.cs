@@ -393,12 +393,15 @@ namespace UnityEditor.AI
         
         public static bool IsSurfaceBaking(NavMeshSurface surface)
         {
+            if (surface == null)
+                return false;
+
             foreach (var oper in s_BakeOperations)
             {
                 if (oper.surface == null || oper.bakeOperation == null)
                     continue;
 
-                if (oper.surface == surface && !oper.bakeOperation.isDone)
+                if (oper.surface == surface)
                     return true;
             }
 
