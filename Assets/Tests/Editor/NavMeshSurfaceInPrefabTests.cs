@@ -10,14 +10,17 @@ using UnityEditor;
 using UnityEditor.AI;
 using UnityEditor.SceneManagement;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 [Category("PrefabsWithNavMeshComponents")]
 public class NavMeshSurfaceInPrefabTests
 {
     const string k_AutoSaveKey = "AutoSave";
-    const string k_TempFolder = "Assets/Tests/Editor/TempPrefabs";
-    string m_PrefabPath = "";
+    string m_TempFolder = "Assets/Tests/Editor/TempPrefabs";
+    string m_PrefabPath;
+    string m_PreviousScenePath;
+    string m_TempScenePath;
     int m_TestCounter;
 
     const int k_BlueArea = 0;
@@ -38,15 +41,24 @@ public class NavMeshSurfaceInPrefabTests
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
-        //if (System.IO.Directory.Exists(k_TempFolder))
-            AssetDatabase.DeleteAsset(k_TempFolder);
+        //if (System.IO.Directory.Exists(m_TempFolder))
+            AssetDatabase.DeleteAsset(m_TempFolder);
 
-        //if (!System.IO.Directory.Exists(k_TempFolder))
-            AssetDatabase.CreateFolder("Assets/Tests/Editor", "TempPrefabs");
+        //if (!System.IO.Directory.Exists(m_TempFolder))
+        //{
+            var folderGUID = AssetDatabase.CreateFolder("Assets/Tests/Editor", "TempPrefabs");
+            m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
+        //}
 
         SessionState.SetBool(k_AutoSaveKey, StageManager.instance.autoSave);
         StageManager.instance.autoSave = false;
         StageManager.instance.GoToMainStage();
+
+        m_PreviousScenePath = SceneManager.GetActiveScene().path;
+        m_TempScenePath = Path.Combine(m_TempFolder, "NavMeshSurfacePrefabTestsScene.unity");
+        var tempScene = EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
+        EditorSceneManager.SaveScene(tempScene, m_TempScenePath);
+        EditorSceneManager.OpenScene(m_TempScenePath);
     }
 
     [OneTimeTearDown]
@@ -55,8 +67,16 @@ public class NavMeshSurfaceInPrefabTests
         StageManager.instance.autoSave = SessionState.GetBool(k_AutoSaveKey, StageManager.instance.autoSave);
         StageManager.instance.GoToMainStage();
 
-        if (System.IO.Directory.Exists(k_TempFolder))
-            AssetDatabase.DeleteAsset(k_TempFolder);
+        EditorSceneManager.ClearSceneDirtiness(SceneManager.GetActiveScene());
+
+        if (m_PreviousScenePath == "")
+        {
+            EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
+        }
+
+        //File.Delete(m_TempScenePath);
+        //if (System.IO.Directory.Exists(m_TempFolder))
+            AssetDatabase.DeleteAsset(m_TempFolder);
     }
 
     [UnitySetUp]
@@ -71,7 +91,7 @@ public class NavMeshSurfaceInPrefabTests
 #if NAVMESHSURFACE_CLEANUP_LEAKED_DATA_ASSETS
         m_InitialPrefabNavMeshDataPath = AssetDatabase.GetAssetPath(surface.navMeshData);
 #endif
-        m_PrefabPath = Path.Combine(k_TempFolder, plane.name + ".prefab");
+        m_PrefabPath = Path.Combine(m_TempFolder, plane.name + ".prefab");
         PrefabUtility.CreatePrefab(m_PrefabPath, plane);
 
         Object.DestroyImmediate(plane);
