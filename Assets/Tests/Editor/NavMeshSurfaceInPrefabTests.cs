@@ -475,6 +475,7 @@ public class NavMeshSurfaceInPrefabTests
         yield return null;
     }
 
+    [Ignore("Deletion of the old asset is expected to be done manually for the time being.")]
     [UnityTest]
     public IEnumerator NavMeshSurfacePrefab_WhenRebakedButNotSaved_TheRebakedAssetNoLongerExists()
     {
@@ -503,18 +504,16 @@ public class NavMeshSurfaceInPrefabTests
         AssetDatabase.OpenAsset(prefab);
         var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabInstanceRoot.GetComponent<NavMeshSurface>();
-        var assetFolderPath = NavMeshSurfaceEditor.GetAndEnsureTargetPath(prefabSurface);
-        var navMeshAssetName = prefabSurface.navMeshData.name + ".asset";
-        var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
+        var initialAssetPath = AssetDatabase.GetAssetPath(prefabSurface.navMeshData);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file must exist. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(initialAssetPath), "NavMeshData file must exist. ({0})", initialAssetPath);
 
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "The initial NavMeshData file must exist after prefab rebake. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(initialAssetPath), "The initial NavMeshData file must exist after prefab rebake. ({0})", initialAssetPath);
 
         prefabStage.SavePrefab();
-        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "NavMeshData file still exists after saving. ({0})", combinedAssetPath);
+        Assert.IsFalse(System.IO.File.Exists(initialAssetPath), "NavMeshData file still exists after saving. ({0})", initialAssetPath);
 
         StageNavigationManager.instance.GoToMainStage();
 
@@ -554,6 +553,7 @@ public class NavMeshSurfaceInPrefabTests
         yield return null;
     }
 
+    [Ignore("Deletion of the old asset is expected to be done manually for the time being.")]
     [UnityTest]
     public IEnumerator NavMeshSurfacePrefab_AfterModifiedInstanceAppliedBack_TheOldAssetNoLongerExists()
     {
@@ -689,6 +689,7 @@ public class NavMeshSurfaceInPrefabTests
         yield return null;
     }
 
+    [Ignore("Deletion of the old asset is expected to be done manually for the time being.")]
     [UnityTest]
     public IEnumerator NavMeshSurfacePrefab_WhenInstanceRevertsBack_TheInstanceAssetNoLongerExists()
     {
@@ -717,6 +718,7 @@ public class NavMeshSurfaceInPrefabTests
         yield return null;
     }
 
+    [Ignore("Undefined expected behaviour for the time being.")]
     [UnityTest]
     public IEnumerator NavMeshSurfacePrefab_WhenDeleted_InstancesMakeCopiesOfData()
     {
