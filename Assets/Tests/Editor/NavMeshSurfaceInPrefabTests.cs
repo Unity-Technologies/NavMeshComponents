@@ -69,7 +69,7 @@ public class NavMeshSurfaceInPrefabTests
 
         EditorSceneManager.ClearSceneDirtiness(SceneManager.GetActiveScene());
 
-        if (m_PreviousScenePath == "")
+        if (string.IsNullOrEmpty(m_PreviousScenePath))
         {
             EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
         }

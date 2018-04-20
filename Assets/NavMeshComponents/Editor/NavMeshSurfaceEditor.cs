@@ -93,7 +93,20 @@ namespace UnityEditor.AI
 
             var targetPath = "Assets";
             if (!string.IsNullOrEmpty(activeScenePath))
+            {
                 targetPath = Path.Combine(Path.GetDirectoryName(activeScenePath), Path.GetFileNameWithoutExtension(activeScenePath));
+            }
+            else
+            {
+                var prefabStage = PrefabStageUtility.GetPrefabStage(surface.gameObject);
+                var isPartOfPrefab = prefabStage != null && prefabStage.IsPartOfPrefab(surface.gameObject);
+                if (isPartOfPrefab && !string.IsNullOrEmpty(prefabStage.prefabAssetPath))
+                {
+                    var prefabDirectoryName = Path.GetDirectoryName(prefabStage.prefabAssetPath);
+                    if (!string.IsNullOrEmpty(prefabDirectoryName))
+                        targetPath = prefabDirectoryName;
+                }
+            }
             if (!Directory.Exists(targetPath))
                 Directory.CreateDirectory(targetPath);
             return targetPath;
