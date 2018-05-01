@@ -1,3 +1,5 @@
+artifacts/**
+build/**
 Library/*
 Temp/*
 Assembly-CSharp-Editor.csproj
