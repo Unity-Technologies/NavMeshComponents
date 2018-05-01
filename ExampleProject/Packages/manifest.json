@@ -1,5 +1,6 @@
 {
 	"dependencies": {
 		"com.unity.ai.navmesh": "file:../../com.unity.ai.navmesh"
-	}
+	},
+	"testables": [ "com.unity.ai.navmesh" ]
 }
