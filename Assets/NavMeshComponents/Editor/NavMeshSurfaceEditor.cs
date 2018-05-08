@@ -99,7 +99,7 @@ namespace UnityEditor.AI
             else
             {
                 var prefabStage = PrefabStageUtility.GetPrefabStage(surface.gameObject);
-                var isPartOfPrefab = prefabStage != null && prefabStage.IsPartOfPrefab(surface.gameObject);
+                var isPartOfPrefab = prefabStage != null && prefabStage.IsPartOfPrefabContents(surface.gameObject);
                 if (isPartOfPrefab && !string.IsNullOrEmpty(prefabStage.prefabAssetPath))
                 {
                     var prefabDirectoryName = Path.GetDirectoryName(prefabStage.prefabAssetPath);
