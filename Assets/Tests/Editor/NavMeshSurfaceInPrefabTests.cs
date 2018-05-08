@@ -535,7 +535,6 @@ public class NavMeshSurfaceInPrefabTests
         var rebuiltPrefabNavMeshData = prefabSurface.navMeshData;
         Assert.IsNotNull(rebuiltPrefabNavMeshData);
         Assert.AreNotSame(initialPrefabNavMeshData, rebuiltPrefabNavMeshData);
-        EditorSceneManager.MarkSceneDirty(prefabStage.scene);
 
         StageNavigationManager.instance.GoToMainStage();
 
