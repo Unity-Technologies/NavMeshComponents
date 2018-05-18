@@ -87,15 +87,20 @@ public class NavMeshSurfaceInPrefabTests
         plane.name = "NavMeshSurfacePrefab" + (++m_TestCounter);
         var surface = plane.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.Children;
-        yield return BakeNavMeshAsync(() => surface, k_PrefabDefaultArea);
 
 #if NAVMESHSURFACE_CLEANUP_LEAKED_DATA_ASSETS
         m_InitialPrefabNavMeshDataPath = AssetDatabase.GetAssetPath(surface.navMeshData);
 #endif
         m_PrefabPath = Path.Combine(m_TempFolder, plane.name + ".prefab");
-        PrefabUtility.CreatePrefab(m_PrefabPath, plane);
-
+        var planePrefab = PrefabUtility.CreatePrefab(m_PrefabPath, plane);
         Object.DestroyImmediate(plane);
+
+        AssetDatabase.OpenAsset(planePrefab);
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+        var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
+        yield return BakeNavMeshAsync(() => prefabSurface, k_PrefabDefaultArea);
+        prefabStage.SavePrefab();
+        StageNavigationManager.instance.GoToMainStage();
 
         NavMesh.RemoveAllNavMeshData();
 
