@@ -499,23 +499,37 @@ public class NavMeshSurfaceInPrefabTests
     }
 
     [UnityTest]
-    public IEnumerator NavMeshSurfacePrefab_WhenRebaked_TheOldAssetExistsUntilSaving()
+    public IEnumerator NavMeshSurfacePrefab_WhenRebaked_TheOldAssetExistsUntilSavingAndNotAfter()
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         AssetDatabase.OpenAsset(prefab);
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
+        var initialNavMeshData = prefabSurface.navMeshData;
         var initialAssetPath = AssetDatabase.GetAssetPath(prefabSurface.navMeshData);
 
+        // Assert.IsNull cannot verify correctly that an UnityEngine.Object is null
+        Assert.IsTrue(initialNavMeshData != null, "Prefab must have some NavMeshData.");
         Assert.IsTrue(System.IO.File.Exists(initialAssetPath), "NavMeshData file must exist. ({0})", initialAssetPath);
 
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
 
-        Assert.IsTrue(System.IO.File.Exists(initialAssetPath), "The initial NavMeshData file must exist after prefab rebake. ({0})", initialAssetPath);
+        Assert.IsTrue(initialNavMeshData != null, "The initial NavMeshData must still exist immediately after prefab re-bake.");
+        Assert.IsTrue(System.IO.File.Exists(initialAssetPath), "The initial NavMeshData file must exist after prefab re-bake. ({0})", initialAssetPath);
+
+        Assert.IsTrue(prefabSurface.navMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
+        var unsavedRebakedNavMeshData = prefabSurface.navMeshData;
+
+        yield return BakeNavMeshAsync(() => prefabSurface, k_OrangeArea);
+
+        Assert.IsTrue(unsavedRebakedNavMeshData == null, "An unsaved NavMeshData should not exist after a re-bake.");
+        Assert.IsTrue(prefabSurface.navMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
 
         prefabStage.SavePrefab();
         Assert.IsFalse(System.IO.File.Exists(initialAssetPath), "NavMeshData file still exists after saving. ({0})", initialAssetPath);
+        Assert.IsTrue(initialNavMeshData == null, "The initial NavMeshData must no longer exist after saving the prefab.");
 
+        // ReSharper disable once HeuristicUnreachableCode - initialNavMeshData is affected by BakeNavMeshAsync()
         StageNavigationManager.instance.GoToMainStage();
 
         yield return null;
