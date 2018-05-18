@@ -8,6 +8,7 @@ using System.Collections;
 using System.IO;
 using UnityEditor;
 using UnityEditor.AI;
+using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
@@ -108,7 +109,7 @@ public class NavMeshSurfaceInPrefabTests
         //{
         //    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         //    AssetDatabase.OpenAsset(prefab);
-        //    var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        //    var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         //    if (prefabStage != null && prefabStage.prefabContentsRoot != null)
         //    {
         //        var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
@@ -162,7 +163,7 @@ public class NavMeshSurfaceInPrefabTests
 
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         Assert.IsNotNull(prefabStage);
         Assert.IsNotNull(prefabStage.prefabContentsRoot);
 
@@ -207,7 +208,7 @@ public class NavMeshSurfaceInPrefabTests
         var instanceCloneNavMeshData = instanceCloneSurface.navMeshData;
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         Assert.IsNotNull(prefabStage);
         Assert.IsNotNull(prefabStage.prefabContentsRoot);
 
@@ -235,7 +236,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsNotNull(instanceSurface.navMeshData);
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         NavMeshSurfaceEditor.ClearSurfaces(new Object[] { prefabSurface });
         prefabStage.SavePrefab();
@@ -260,7 +261,7 @@ public class NavMeshSurfaceInPrefabTests
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
 
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
@@ -321,7 +322,7 @@ public class NavMeshSurfaceInPrefabTests
         var instanceCloneNavMeshData = instanceCloneSurface.navMeshData;
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var prefabNavMeshData = prefabSurface.navMeshData;
         Assert.AreNotSame(instanceNavMeshData, prefabNavMeshData);
@@ -364,7 +365,7 @@ public class NavMeshSurfaceInPrefabTests
         var instanceCloneNavMeshData = instanceCloneSurface.navMeshData;
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var prefabNavMeshData = prefabSurface.navMeshData;
         Assert.AreNotSame(prefabNavMeshData, instanceSurface.navMeshData);
@@ -396,7 +397,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, expectedAreaMask));
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var prefabNavMeshData = prefabSurface.navMeshData;
         Assert.IsNotNull(prefabNavMeshData);
@@ -425,7 +426,7 @@ public class NavMeshSurfaceInPrefabTests
         TestNavMeshExistsAloneAtPosition(k_RedArea, Vector3.zero);
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var initialPrefabNavMeshData = prefabSurface.navMeshData;
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
@@ -433,7 +434,7 @@ public class NavMeshSurfaceInPrefabTests
         StageNavigationManager.instance.GoToMainStage();
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStageReopened = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStageReopened = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurfaceReopened = prefabStageReopened.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var prefabNavMeshData = prefabSurfaceReopened.navMeshData;
         Assert.IsNotNull(prefabNavMeshData);
@@ -453,7 +454,7 @@ public class NavMeshSurfaceInPrefabTests
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var initialPrefabNavMeshData = prefabSurface.navMeshData;
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
@@ -464,7 +465,7 @@ public class NavMeshSurfaceInPrefabTests
         StageNavigationManager.instance.GoToMainStage();
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStageReopened = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStageReopened = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurfaceReopened = prefabStageReopened.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var prefabNavMeshData = prefabSurfaceReopened.navMeshData;
         Assert.AreSame(initialPrefabNavMeshData, prefabNavMeshData);
@@ -481,7 +482,7 @@ public class NavMeshSurfaceInPrefabTests
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
         var assetFolderPath = NavMeshSurfaceEditor.GetAndEnsureTargetPath(prefabSurface);
@@ -502,7 +503,7 @@ public class NavMeshSurfaceInPrefabTests
     {
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var initialAssetPath = AssetDatabase.GetAssetPath(prefabSurface.navMeshData);
 
@@ -528,7 +529,7 @@ public class NavMeshSurfaceInPrefabTests
 
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var initialPrefabNavMeshData = prefabSurface.navMeshData;
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
@@ -539,7 +540,7 @@ public class NavMeshSurfaceInPrefabTests
         StageNavigationManager.instance.GoToMainStage();
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStageReopened = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStageReopened = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurfaceReopened = prefabStageReopened.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var prefabNavMeshData = prefabSurfaceReopened.navMeshData;
         Assert.AreNotSame(initialPrefabNavMeshData, prefabNavMeshData);
@@ -617,7 +618,7 @@ public class NavMeshSurfaceInPrefabTests
         TestNavMeshExistsAloneAtPosition(k_RedArea, instanceTwo.transform.position);
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
         prefabStage.SavePrefab();
@@ -652,7 +653,7 @@ public class NavMeshSurfaceInPrefabTests
         PrefabUtility.ApplyPrefabInstance(instance);
 
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
 
         Assert.IsNull(prefabSurface.navMeshData);
@@ -733,7 +734,7 @@ public class NavMeshSurfaceInPrefabTests
 
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         AssetDatabase.OpenAsset(prefab);
-        var prefabStage = StageNavigationManager.instance.GetCurrentPrefabStage();
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
 
         prefabSurface.collectObjects = CollectObjects.All;
