@@ -120,7 +120,7 @@ public class NavMeshSurfaceInPrefabTests
         //        var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         //        if (prefabSurface != null)
         //        {
-        //            NavMeshSurfaceEditor.ClearSurfaces(new Object[] { prefabSurface });
+        //            NavMeshDataAssetManager.instance.ClearSurfaces(new Object[] { prefabSurface });
         //        }
         //    }
 
@@ -243,7 +243,7 @@ public class NavMeshSurfaceInPrefabTests
         AssetDatabase.OpenAsset(prefab);
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
-        NavMeshSurfaceEditor.ClearSurfaces(new Object[] { prefabSurface });
+        NavMeshDataAssetManager.instance.ClearSurfaces(new Object[] { prefabSurface });
         prefabStage.SavePrefab();
 
         StageNavigationManager.instance.GoToMainStage();
@@ -357,7 +357,7 @@ public class NavMeshSurfaceInPrefabTests
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsNotNull(instanceSurface);
-        NavMeshSurfaceEditor.ClearSurfaces(new Object[] { instanceSurface });
+        NavMeshDataAssetManager.instance.ClearSurfaces(new Object[] { instanceSurface });
 
         var expectedAreaMask = 1 << k_PrefabDefaultArea;
         Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, expectedAreaMask));
@@ -396,7 +396,7 @@ public class NavMeshSurfaceInPrefabTests
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsNotNull(instanceSurface);
         var initialPrefabNavMeshData = instanceSurface.navMeshData;
-        NavMeshSurfaceEditor.ClearSurfaces(new Object[] { instanceSurface });
+        NavMeshDataAssetManager.instance.ClearSurfaces(new Object[] { instanceSurface });
 
         var expectedAreaMask = 1 << k_PrefabDefaultArea;
         Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, expectedAreaMask));
@@ -490,7 +490,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
-        var assetFolderPath = NavMeshSurfaceEditor.GetAndEnsureTargetPath(prefabSurface);
+        var assetFolderPath = NavMeshDataAssetManager.instance.GetAndEnsureTargetPath(prefabSurface);
         var navMeshAssetName = prefabSurface.navMeshData.name + ".asset";
         var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
 
@@ -585,7 +585,7 @@ public class NavMeshSurfaceInPrefabTests
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsNotNull(instanceSurface);
 
-        var assetFolderPath = NavMeshSurfaceEditor.GetAndEnsureTargetPath(instanceSurface);
+        var assetFolderPath = NavMeshDataAssetManager.instance.GetAndEnsureTargetPath(instanceSurface);
         var navMeshAssetName = instanceSurface.navMeshData.name + ".asset";
         var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
 
@@ -664,7 +664,7 @@ public class NavMeshSurfaceInPrefabTests
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsNotNull(instanceSurface);
 
-        NavMeshSurfaceEditor.ClearSurfaces(new Object[] { instanceSurface });
+        NavMeshDataAssetManager.instance.ClearSurfaces(new Object[] { instanceSurface });
 
         var expectedAreaMask = 1 << k_PrefabDefaultArea;
         Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, expectedAreaMask));
@@ -722,7 +722,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsNotNull(instanceSurface);
         yield return BakeNavMeshAsync(() => instanceSurface, k_RedArea);
 
-        var assetFolderPath = NavMeshSurfaceEditor.GetAndEnsureTargetPath(instanceSurface);
+        var assetFolderPath = NavMeshDataAssetManager.instance.GetAndEnsureTargetPath(instanceSurface);
         var navMeshAssetName = instanceSurface.navMeshData.name + ".asset";
         var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
 
@@ -793,7 +793,7 @@ public class NavMeshSurfaceInPrefabTests
     {
         var surface = getSurface();
         surface.defaultArea = defaultArea;
-        NavMeshSurfaceEditor.StartBakingSurfaces(new Object[] { surface });
-        yield return new WaitWhile(() => NavMeshSurfaceEditor.IsSurfaceBaking(surface));
+        NavMeshDataAssetManager.instance.StartBakingSurfaces(new Object[] { surface });
+        yield return new WaitWhile(() => NavMeshDataAssetManager.instance.IsSurfaceBaking(surface));
     }
 }

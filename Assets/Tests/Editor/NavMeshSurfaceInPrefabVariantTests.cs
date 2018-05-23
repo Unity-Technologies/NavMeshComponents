@@ -118,7 +118,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         //        var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         //        if (prefabSurface != null)
         //        {
-        //            NavMeshSurfaceEditor.ClearSurfaces(new Object[] { prefabSurface });
+        //            NavMeshDataAssetManager.instance.ClearSurfaces(new Object[] { prefabSurface });
         //        }
         //    }
 
@@ -243,8 +243,8 @@ public class NavMeshSurfaceInPrefabVariantTests
     {
         var surface = getSurface();
         surface.defaultArea = defaultArea;
-        NavMeshSurfaceEditor.StartBakingSurfaces(new Object[] { surface });
-        yield return new WaitWhile(() => NavMeshSurfaceEditor.IsSurfaceBaking(surface));
+        NavMeshDataAssetManager.instance.StartBakingSurfaces(new Object[] { surface });
+        yield return new WaitWhile(() => NavMeshDataAssetManager.instance.IsSurfaceBaking(surface));
     }
 
     //static void TestNavMeshExistsAloneAtPosition(int expectedArea, Vector3 pos)
