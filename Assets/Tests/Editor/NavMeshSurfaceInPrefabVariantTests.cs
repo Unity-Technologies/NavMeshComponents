@@ -243,8 +243,8 @@ public class NavMeshSurfaceInPrefabVariantTests
     {
         var surface = getSurface();
         surface.defaultArea = defaultArea;
-        NavMeshDataAssetManager.instance.StartBakingSurfaces(new Object[] { surface });
-        yield return new WaitWhile(() => NavMeshDataAssetManager.instance.IsSurfaceBaking(surface));
+        NavMeshAssetManager.instance.StartBakingSurfaces(new Object[] { surface });
+        yield return new WaitWhile(() => NavMeshAssetManager.instance.IsSurfaceBaking(surface));
     }
 
     //static void TestNavMeshExistsAloneAtPosition(int expectedArea, Vector3 pos)

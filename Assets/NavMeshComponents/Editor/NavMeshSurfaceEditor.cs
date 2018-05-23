@@ -236,20 +236,20 @@ namespace UnityEditor.AI
                 GUILayout.Space(EditorGUIUtility.labelWidth);
                 if (GUILayout.Button("Clear"))
                 {
-                    NavMeshDataAssetManager.instance.ClearSurfaces(targets);
+                    NavMeshAssetManager.instance.ClearSurfaces(targets);
                     SceneView.RepaintAll();
                 }
 
                 if (GUILayout.Button("Bake"))
                 {
-                    NavMeshDataAssetManager.instance.StartBakingSurfaces(targets);
+                    NavMeshAssetManager.instance.StartBakingSurfaces(targets);
                 }
 
                 GUILayout.EndHorizontal();
             }
 
             // Show progress for the selected targets
-            var bakeOperations = NavMeshDataAssetManager.instance.GetBakeOperations();
+            var bakeOperations = NavMeshAssetManager.instance.GetBakeOperations();
             for (int i = bakeOperations.Count - 1; i >= 0; --i)
             {
                 if (!targets.Contains(bakeOperations[i].surface))

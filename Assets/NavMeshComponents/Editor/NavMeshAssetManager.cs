@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace UnityEditor.AI
 {
-    class NavMeshDataAssetManager : ScriptableSingleton<NavMeshDataAssetManager>
+    class NavMeshAssetManager : ScriptableSingleton<NavMeshAssetManager>
     {
         internal struct AsyncBakeOperation
         {
