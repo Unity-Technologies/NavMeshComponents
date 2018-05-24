@@ -238,7 +238,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsNotNull(instance);
         instance.name = "PrefabInstance" + m_TestCounter;
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
-        Assert.IsNotNull(instanceSurface.navMeshData);
+        Assert.IsTrue(instanceSurface.navMeshData != null, "NavMeshSurface in prefab instance must have NavMeshData.");
 
         AssetDatabase.OpenAsset(prefab);
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
@@ -247,7 +247,8 @@ public class NavMeshSurfaceInPrefabTests
         prefabStage.SavePrefab();
 
         StageNavigationManager.instance.GoToMainStage();
-        Assert.IsNull(instanceSurface.navMeshData);
+        Assert.IsTrue(instanceSurface.navMeshData == null,
+            "After the NavMeshSurface in the prefab has been cleared the prefab instance should no longer hold NavMeshData.");
         var expectedAreaMask = 1 << k_PrefabDefaultArea;
         Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, expectedAreaMask));
 
@@ -405,7 +406,8 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var prefabNavMeshData = prefabSurface.navMeshData;
-        Assert.IsNotNull(prefabNavMeshData);
+        Assert.IsTrue(prefabNavMeshData != null,
+            "NavMeshSurface in the prefab must still have NavMeshData even though the instance was cleared.");
         Assert.AreSame(initialPrefabNavMeshData, prefabNavMeshData);
 
         StageNavigationManager.instance.GoToMainStage();
@@ -442,7 +444,8 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStageReopened = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurfaceReopened = prefabStageReopened.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var prefabNavMeshData = prefabSurfaceReopened.navMeshData;
-        Assert.IsNotNull(prefabNavMeshData);
+        Assert.IsTrue(prefabNavMeshData != null,
+            "NavMeshSurface in prefab must have NavMeshData after baking, saving, closing and reopening.");
         Assert.AreNotSame(instanceNavMeshData, prefabNavMeshData);
         Assert.AreNotSame(initialPrefabNavMeshData, prefabNavMeshData);
         Assert.AreSame(instanceNavMeshData, instanceSurface.navMeshData);
@@ -464,7 +467,7 @@ public class NavMeshSurfaceInPrefabTests
         var initialPrefabNavMeshData = prefabSurface.navMeshData;
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
         var rebuiltPrefabNavMeshData = prefabSurface.navMeshData;
-        Assert.IsNotNull(rebuiltPrefabNavMeshData);
+        Assert.IsTrue(rebuiltPrefabNavMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
         Assert.AreNotSame(initialPrefabNavMeshData, rebuiltPrefabNavMeshData);
 
         StageNavigationManager.instance.GoToMainStage();
@@ -553,7 +556,7 @@ public class NavMeshSurfaceInPrefabTests
         var initialPrefabNavMeshData = prefabSurface.navMeshData;
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
         var rebuiltPrefabNavMeshData = prefabSurface.navMeshData;
-        Assert.IsNotNull(rebuiltPrefabNavMeshData);
+        Assert.IsTrue(rebuiltPrefabNavMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
         Assert.AreNotSame(initialPrefabNavMeshData, rebuiltPrefabNavMeshData);
 
         StageNavigationManager.instance.GoToMainStage();
@@ -675,7 +678,8 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
 
-        Assert.IsNull(prefabSurface.navMeshData);
+        Assert.IsTrue(prefabSurface.navMeshData == null,
+            "Prefab should have empty NavMeshData when empty data has been applied back from the instance.");
 
         StageNavigationManager.instance.GoToMainStage();
 
