@@ -84,7 +84,7 @@ public class NavMeshSurfaceInPrefabTests
     public IEnumerator Setup()
     {
         var plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        plane.name = "NavMeshSurfacePrefab" + (++m_TestCounter);
+        plane.name = "NavMeshSurface" + (++m_TestCounter) + "Prefab";
         var surface = plane.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.Children;
 
@@ -192,7 +192,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
@@ -202,7 +202,7 @@ public class NavMeshSurfaceInPrefabTests
         var clonePosition = new Vector3(20, 0, 0);
         var instanceClone = Object.Instantiate(instance, clonePosition, Quaternion.identity);
         Assert.IsNotNull(instanceClone);
-        instanceClone.name = "PrefabInstanceClone" + m_TestCounter;
+        instanceClone.name = "Surface" + m_TestCounter + "PrefabInstanceClone";
 
         var expectedAreaMask = 1 << k_PrefabDefaultArea;
         Assert.IsTrue(HasNavMeshAtPosition(clonePosition, expectedAreaMask));
@@ -236,7 +236,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsTrue(instanceSurface.navMeshData != null, "NavMeshSurface in prefab instance must have NavMeshData.");
 
@@ -263,7 +263,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instanceOne = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instanceOne);
-        instanceOne.name = "PrefabInstanceOne" + m_TestCounter;
+        instanceOne.name = "Surface" + m_TestCounter + "PrefabInstanceOne";
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
         AssetDatabase.OpenAsset(prefab);
@@ -284,7 +284,7 @@ public class NavMeshSurfaceInPrefabTests
 
         var instanceTwo = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instanceTwo);
-        instanceTwo.name = "PrefabInstanceTwo" + m_TestCounter;
+        instanceTwo.name = "Surface" + m_TestCounter + "PrefabInstanceTwo";
         // reactivate the object to apply the change of position immediately
         instanceTwo.SetActive(false);
         instanceTwo.transform.position = new Vector3(20, 0, 0);
@@ -305,12 +305,12 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
 
         var clonePosition = new Vector3(20, 0, 0);
         var instanceClone = Object.Instantiate(instance, clonePosition, Quaternion.identity);
         Assert.IsNotNull(instanceClone);
-        instanceClone.name = "PrefabInstanceClone" + m_TestCounter;
+        instanceClone.name = "Surface" + m_TestCounter + "PrefabInstanceClone";
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsNotNull(instanceSurface);
@@ -349,12 +349,12 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
 
         var clonePosition = new Vector3(20, 0, 0);
         var instanceClone = Object.Instantiate(instance, clonePosition, Quaternion.identity);
         Assert.IsNotNull(instanceClone);
-        instanceClone.name = "PrefabInstanceClone" + m_TestCounter;
+        instanceClone.name = "Surface" + m_TestCounter + "PrefabInstanceClone";
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsNotNull(instanceSurface);
@@ -392,7 +392,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsNotNull(instanceSurface);
@@ -423,7 +423,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsNotNull(instanceSurface);
@@ -583,7 +583,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
@@ -617,12 +617,12 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instanceOne = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instanceOne);
-        instanceOne.name = "PrefabInstanceOne" + m_TestCounter;
+        instanceOne.name = "Surface" + m_TestCounter + "PrefabInstanceOne";
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
         var instanceTwo = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instanceTwo);
-        instanceTwo.name = "PrefabInstanceTwo" + m_TestCounter;
+        instanceTwo.name = "Surface" + m_TestCounter + "PrefabInstanceTwo";
         // reactivate the object to apply the change of position immediately
         instanceTwo.SetActive(false);
         instanceTwo.transform.position = new Vector3(20, 0, 0);
@@ -662,7 +662,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
@@ -695,7 +695,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
@@ -720,7 +720,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
         Assert.IsNotNull(instance);
-        instance.name = "PrefabInstance" + m_TestCounter;
+        instance.name = "Surface" + m_TestCounter + "PrefabInstance";
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
