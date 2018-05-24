@@ -589,22 +589,20 @@ public class NavMeshSurfaceInPrefabTests
         var instanceSurface = instance.GetComponent<NavMeshSurface>();
         Assert.IsNotNull(instanceSurface);
 
-        var assetFolderPath = NavMeshAssetManager.instance.GetAndEnsureTargetPath(instanceSurface);
-        var navMeshAssetName = instanceSurface.navMeshData.name + ".asset";
-        var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
+        var initialInstanceAssetPath = AssetDatabase.GetAssetPath(instanceSurface.navMeshData);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "Prefab's NavMeshData file must exist. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(initialInstanceAssetPath), "Prefab's NavMeshData file must exist. ({0})", initialInstanceAssetPath);
 
         yield return BakeNavMeshAsync(() => instanceSurface, k_RedArea);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath),
-            "Prefab's NavMeshData file exists after the instance has changed. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(initialInstanceAssetPath),
+            "Prefab's NavMeshData file exists after the instance has changed. ({0})", initialInstanceAssetPath);
 
         PrefabUtility.ApplyPrefabInstance(instance);
 
-        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath),
+        Assert.IsFalse(System.IO.File.Exists(initialInstanceAssetPath),
             "Prefab's NavMeshData file still exists after the changes from the instance have been applied back to the prefab. ({0})",
-            combinedAssetPath);
+            initialInstanceAssetPath);
 
         Object.DestroyImmediate(instance);
 
@@ -727,15 +725,13 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsNotNull(instanceSurface);
         yield return BakeNavMeshAsync(() => instanceSurface, k_RedArea);
 
-        var assetFolderPath = NavMeshAssetManager.instance.GetAndEnsureTargetPath(instanceSurface);
-        var navMeshAssetName = instanceSurface.navMeshData.name + ".asset";
-        var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
+        var instanceAssetPath = AssetDatabase.GetAssetPath(instanceSurface.navMeshData);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "Instance's NavMeshData file must exist. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(instanceAssetPath), "Instance's NavMeshData file must exist. ({0})", instanceAssetPath);
 
         PrefabUtility.RevertPrefabInstance(instance);
 
-        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "Instance's NavMeshData file still exists after revert. ({0})", combinedAssetPath);
+        Assert.IsFalse(System.IO.File.Exists(instanceAssetPath), "Instance's NavMeshData file still exists after revert. ({0})", instanceAssetPath);
 
         Object.DestroyImmediate(instance);
 
