@@ -290,6 +290,16 @@ namespace UnityEditor.AI
                     {
                         //Debug.LogFormat("The surface {0} from the prefab was storing the original navmesh data and now will be forgotten", surfaceInPrefab);
 
+                        var baseSurface = PrefabUtility.GetCorrespondingObjectFromSource(surfaceInPrefab) as NavMeshSurface;
+                        if (baseSurface == null || surfaceInPrefab.navMeshData != baseSurface.navMeshData)
+                        {
+                            var assetPath = AssetDatabase.GetAssetPath(surfaceInPrefab.navMeshData);
+                            AssetDatabase.DeleteAsset(assetPath);
+
+                            //Debug.LogFormat("The surface {0} from the prefab has baked new NavMeshData but did not save this change so the asset has been now deleted. ({1})",
+                            //    surfaceInPrefab, assetPath);
+                        }
+
                         s_PrefabNavMeshDataAssets.RemoveAt(i);
                     }
                 }

@@ -465,6 +465,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var initialPrefabNavMeshData = prefabSurface.navMeshData;
+        var initialPrefabNavMeshAssetPath = AssetDatabase.GetAssetPath(initialPrefabNavMeshData);
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
         var rebuiltPrefabNavMeshData = prefabSurface.navMeshData;
         Assert.IsTrue(rebuiltPrefabNavMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
@@ -478,13 +479,15 @@ public class NavMeshSurfaceInPrefabTests
         var prefabNavMeshData = prefabSurfaceReopened.navMeshData;
         Assert.AreSame(initialPrefabNavMeshData, prefabNavMeshData);
         Assert.AreNotSame(rebuiltPrefabNavMeshData, prefabNavMeshData);
+        var prefabNavMeshAssetPath = AssetDatabase.GetAssetPath(prefabNavMeshData);
+        StringAssert.AreEqualIgnoringCase(initialPrefabNavMeshAssetPath, prefabNavMeshAssetPath,
+            "The NavMeshData asset referenced by the prefab should remain the same when exiting prefab mode without saving.");
 
         StageNavigationManager.instance.GoToMainStage();
 
         yield return null;
     }
 
-    [Ignore("Deletion of the old asset is expected to be done manually for the time being.")]
     [UnityTest]
     public IEnumerator NavMeshSurfacePrefab_WhenRebakedButNotSaved_TheRebakedAssetNoLongerExists()
     {
@@ -493,15 +496,13 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
-        var assetFolderPath = NavMeshAssetManager.instance.GetAndEnsureTargetPath(prefabSurface);
-        var navMeshAssetName = prefabSurface.navMeshData.name + ".asset";
-        var combinedAssetPath = Path.Combine(assetFolderPath, navMeshAssetName);
+        var rebakedAssetPath = AssetDatabase.GetAssetPath(prefabSurface.navMeshData);
 
-        Assert.IsTrue(System.IO.File.Exists(combinedAssetPath), "NavMeshData file must exist. ({0})", combinedAssetPath);
+        Assert.IsTrue(System.IO.File.Exists(rebakedAssetPath), "NavMeshData file must exist. ({0})", rebakedAssetPath);
 
         StageNavigationManager.instance.GoToMainStage();
 
-        Assert.IsFalse(System.IO.File.Exists(combinedAssetPath), "NavMeshData file still exists after discarding the changes. ({0})", combinedAssetPath);
+        Assert.IsFalse(System.IO.File.Exists(rebakedAssetPath), "NavMeshData file still exists after discarding the changes. ({0})", rebakedAssetPath);
 
         yield return null;
     }
