@@ -1,0 +1,12 @@
+{
+    "name": "NavMeshComponentsPlaymodeTests",
+    "references": [
+        "NavMeshComponents"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

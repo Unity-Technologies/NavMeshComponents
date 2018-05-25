@@ -1,0 +1,12 @@
+{
+    "name": "NavMeshComponentsExamplesEditor",
+    "references": [
+        "NavMeshComponentsExamples"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
