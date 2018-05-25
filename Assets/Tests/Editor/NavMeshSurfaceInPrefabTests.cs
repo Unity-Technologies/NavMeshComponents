@@ -448,9 +448,9 @@ public class NavMeshSurfaceInPrefabTests
             "NavMeshSurface in prefab must have NavMeshData after baking, saving, closing and reopening.");
         Assert.AreNotSame(instanceNavMeshData, prefabNavMeshData);
         Assert.AreNotSame(initialPrefabNavMeshData, prefabNavMeshData);
-        Assert.AreSame(instanceNavMeshData, instanceSurface.navMeshData);
 
         StageNavigationManager.instance.GoToMainStage();
+        Assert.AreSame(instanceNavMeshData, instanceSurface.navMeshData);
 
         Object.DestroyImmediate(instance);
 

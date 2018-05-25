@@ -83,19 +83,20 @@ namespace UnityEditor.AI
 
         void ClearSurface(NavMeshSurface navSurface)
         {
-            var hadNavMeshData = navSurface.navMeshData != null;
+            var hasNavMeshData = navSurface.navMeshData != null;
             StoreNavMeshDataIfInPrefab(navSurface);
 
             var assetToDelete = GetNavMeshAssetToDelete(navSurface);
             navSurface.RemoveData();
-            navSurface.navMeshData = null;
-            EditorUtility.SetDirty(navSurface);
+
+            if (hasNavMeshData)
+            {
+                SetNavMeshData(navSurface, null);
+                EditorSceneManager.MarkSceneDirty(navSurface.gameObject.scene);
+            }
 
             if (assetToDelete)
                 AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(assetToDelete));
-
-            if (hadNavMeshData)
-                EditorSceneManager.MarkSceneDirty(navSurface.gameObject.scene);
         }
 
         public void StartBakingSurfaces(UnityEngine.Object[] surfaces)
@@ -141,7 +142,8 @@ namespace UnityEditor.AI
                         AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(delete));
 
                     surface.RemoveData();
-                    surface.navMeshData = oper.bakeData;
+                    SetNavMeshData(surface, oper.bakeData);
+
                     if (surface.isActiveAndEnabled)
                         surface.AddData();
                     CreateNavMeshAsset(surface);
@@ -174,6 +176,15 @@ namespace UnityEditor.AI
         {
             foreach (NavMeshSurface s in surfaces)
                 ClearSurface(s);
+        }
+
+        static void SetNavMeshData(NavMeshSurface navSurface, NavMeshData navMeshData)
+        {
+            var so = new SerializedObject(navSurface);
+            var navMeshDataProperty = so.FindProperty("m_NavMeshData");
+            navMeshDataProperty.objectReferenceValue = navMeshData;
+            so.ApplyModifiedProperties();
+            PrefabUtility.RecordPrefabInstancePropertyModifications(navSurface);
         }
 
         void StoreNavMeshDataIfInPrefab(NavMeshSurface surfaceToStore)
