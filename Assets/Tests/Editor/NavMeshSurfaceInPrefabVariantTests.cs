@@ -50,7 +50,7 @@ public class NavMeshSurfaceInPrefabVariantTests
 
         SessionState.SetBool(k_AutoSaveKey, StageNavigationManager.instance.autoSave);
         StageNavigationManager.instance.autoSave = false;
-        StageNavigationManager.instance.GoToMainStage();
+        StageUtility.GoToMainStage();
 
         m_PreviousScenePath = SceneManager.GetActiveScene().path;
         m_TempScenePath = Path.Combine(m_TempFolder, "NavMeshSurfacePrefabVariantTestsScene.unity");
@@ -63,7 +63,7 @@ public class NavMeshSurfaceInPrefabVariantTests
     public void OneTimeTearDown()
     {
         StageNavigationManager.instance.autoSave = SessionState.GetBool(k_AutoSaveKey, StageNavigationManager.instance.autoSave);
-        StageNavigationManager.instance.GoToMainStage();
+        StageUtility.GoToMainStage();
 
         EditorSceneManager.ClearSceneDirtiness(SceneManager.GetActiveScene());
 
@@ -96,7 +96,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         var theOriginalPrefabSurface = theOriginalPrefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => theOriginalPrefabSurface, k_PrefabDefaultArea);
         theOriginalPrefabStage.SavePrefab();
-        StageNavigationManager.instance.GoToMainStage();
+        StageUtility.GoToMainStage();
 
         PrefabUtility.CreateVariant(planePrefab, m_PrefabVariantPath);
 
@@ -125,7 +125,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         //    AssetDatabase.DeleteAsset(m_PrefabPath);
         //}
 
-        StageNavigationManager.instance.GoToMainStage();
+        StageUtility.GoToMainStage();
 
         yield return null;
     }
@@ -177,7 +177,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         Assert.IsTrue(File.Exists(theOriginalPrefabAssetPath), "NavMeshData file of the original prefab still exists after saving the variant. ({0})", theOriginalPrefabAssetPath);
         Assert.IsTrue(theOriginalPrefabNavMeshData != null, "Original prefab must still have NavMeshData.");
 
-        StageNavigationManager.instance.GoToMainStage();
+        StageUtility.GoToMainStage();
 
         yield return null;
     }
@@ -234,7 +234,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         Assert.IsTrue(File.Exists(theOriginalPrefabAssetPath), "NavMeshData file of the original prefab still exists after saving the variant. ({0})", theOriginalPrefabAssetPath);
         Assert.AreNotEqual(theOriginalPrefabNavMeshData, theNewVariantNavMeshData, "Re-baked modified variant must have a NavMeshData different than that of the original prefab.");
 
-        StageNavigationManager.instance.GoToMainStage();
+        StageUtility.GoToMainStage();
 
         yield return null;
     }
