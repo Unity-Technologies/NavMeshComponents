@@ -1,3 +1,5 @@
+#define NAVMESHCOMPONENTS_SHOW_NAVMESHDATA_REF
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,6 +29,9 @@ namespace UnityEditor.AI
         SerializedProperty m_UseGeometry;
         SerializedProperty m_VoxelSize;
 
+#if NAVMESHCOMPONENTS_SHOW_NAVMESHDATA_REF
+        SerializedProperty m_NavMeshData;
+#endif
         class Styles
         {
             public readonly GUIContent m_LayerMask = new GUIContent("Include Layers");
@@ -70,6 +75,9 @@ namespace UnityEditor.AI
             m_UseGeometry = serializedObject.FindProperty("m_UseGeometry");
             m_VoxelSize = serializedObject.FindProperty("m_VoxelSize");
 
+#if NAVMESHCOMPONENTS_SHOW_NAVMESHDATA_REF
+            m_NavMeshData = serializedObject.FindProperty("m_NavMeshData");
+#endif
             NavMeshVisualizationSettings.showNavigation++;
         }
 
@@ -124,8 +132,6 @@ namespace UnityEditor.AI
 
             EditorGUILayout.PropertyField(m_LayerMask, s_Styles.m_LayerMask);
             EditorGUILayout.PropertyField(m_UseGeometry);
-
-            EditorGUILayout.Space();
 
             EditorGUILayout.Space();
 
@@ -230,6 +236,19 @@ namespace UnityEditor.AI
             if (hadError)
                 EditorGUILayout.Space();
 
+#if NAVMESHCOMPONENTS_SHOW_NAVMESHDATA_REF
+            var nmdRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight);
+
+            EditorGUI.BeginProperty(nmdRect, GUIContent.none, m_NavMeshData);
+            var rectLabel = EditorGUI.PrefixLabel(nmdRect, GUIUtility.GetControlID(FocusType.Passive), new GUIContent(m_NavMeshData.displayName));
+            EditorGUI.EndProperty();
+
+            EditorGUI.BeginDisabled(true);
+            EditorGUI.BeginProperty(nmdRect, GUIContent.none, m_NavMeshData);
+            EditorGUI.ObjectField(rectLabel, m_NavMeshData, GUIContent.none);
+            EditorGUI.EndProperty();
+            EditorGUI.EndDisabled();
+#endif
             using (new EditorGUI.DisabledScope(Application.isPlaying || m_AgentTypeID.intValue == -1))
             {
                 GUILayout.BeginHorizontal();
