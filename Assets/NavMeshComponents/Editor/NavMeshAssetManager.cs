@@ -183,8 +183,7 @@ namespace UnityEditor.AI
             var so = new SerializedObject(navSurface);
             var navMeshDataProperty = so.FindProperty("m_NavMeshData");
             navMeshDataProperty.objectReferenceValue = navMeshData;
-            so.ApplyModifiedProperties();
-            PrefabUtility.RecordPrefabInstancePropertyModifications(navSurface);
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         void StoreNavMeshDataIfInPrefab(NavMeshSurface surfaceToStore)
