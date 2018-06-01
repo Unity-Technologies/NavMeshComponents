@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.SceneManagement;
+#endif
 
 namespace UnityEngine.AI
 {
@@ -207,6 +209,11 @@ namespace UnityEngine.AI
 
         void AppendModifierVolumes(ref List<NavMeshBuildSource> sources)
         {
+#if UNITY_EDITOR
+            var myStage = StageUtility.GetStage(gameObject);
+            if (!myStage.IsValid())
+                return;
+#endif
             // Modifiers
             List<NavMeshModifierVolume> modifiers;
             if (m_CollectObjects == CollectObjects.Children)
@@ -225,6 +232,10 @@ namespace UnityEngine.AI
                     continue;
                 if (!m.AffectsAgentType(m_AgentTypeID))
                     continue;
+#if UNITY_EDITOR
+                if (!myStage.Contains(m.gameObject))
+                    continue;
+#endif
                 var mcenter = m.transform.TransformPoint(m.center);
                 var scale = m.transform.lossyScale;
                 var msize = new Vector3(m.size.x * Mathf.Abs(scale.x), m.size.y * Mathf.Abs(scale.y), m.size.z * Mathf.Abs(scale.z));
@@ -254,7 +265,6 @@ namespace UnityEngine.AI
                 modifiers = NavMeshModifier.activeModifiers;
             }
 
-            var scene = gameObject.scene;
             foreach (var m in modifiers)
             {
                 if ((m_LayerMask & (1 << m.gameObject.layer)) == 0)
@@ -269,6 +279,7 @@ namespace UnityEngine.AI
                 markups.Add(markup);
             }
 
+            var scene = gameObject.scene;
             if (m_CollectObjects == CollectObjects.All)
             {
                 NavMeshBuilder.CollectSources(null, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, scene, sources);
