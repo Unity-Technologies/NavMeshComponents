@@ -18,7 +18,9 @@ using Object = UnityEngine.Object;
 public class NavMeshSurfaceInPrefabTests
 {
     const string k_AutoSaveKey = "AutoSave";
-    string m_TempFolder = "Assets/Tests/Editor/TempPrefabs";
+    const string k_ParentFolder = "Assets/Tests/Editor";
+    const string k_TempFolderName = "TempPrefab";
+    string m_TempFolder = k_ParentFolder + "/" + k_TempFolderName;
     string m_PrefabPath;
     string m_PreviousScenePath;
     string m_TempScenePath;
@@ -47,7 +49,7 @@ public class NavMeshSurfaceInPrefabTests
 
         //if (!System.IO.Directory.Exists(m_TempFolder))
         //{
-            var folderGUID = AssetDatabase.CreateFolder("Assets/Tests/Editor", "TempPrefabs");
+            var folderGUID = AssetDatabase.CreateFolder(k_ParentFolder, k_TempFolderName);
             m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
         //}
 
@@ -127,6 +129,10 @@ public class NavMeshSurfaceInPrefabTests
         //    AssetDatabase.DeleteAsset(m_PrefabPath);
         //}
 
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+        if (prefabStage != null)
+            prefabStage.ClearDirtiness();
+
         StageUtility.GoToMainStage();
 
 #if NAVMESHSURFACE_CLEANUP_LEAKED_DATA_ASSETS
@@ -161,8 +167,42 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsFalse(HasNavMeshAtPosition(pos, ~expectedAreaMask), "A NavMesh with an area other than {0} exists at position {1}.", expectedArea, pos);
     }
 
+    [Test]
+    public void NavMeshSurfacePrefab_WhenOpenedInPrefabMode_DoesNotActivateItsNavMesh()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
+        AssetDatabase.OpenAsset(prefab);
+
+        NavMeshHit hit;
+        NavMesh.SamplePosition(Vector3.zero, out hit, 1000000f, new NavMeshQueryFilter { areaMask = NavMesh.AllAreas, agentTypeID = 0 });
+        Assert.That(hit.hit, Is.False, "The NavMesh instance of a prefab opened for edit should not be active under any circumstances.");
+    }
+
     [UnityTest]
-    public IEnumerator NavMeshSurfacePrefab_AfterEditing_LeavesMainSceneUntouched()
+    public IEnumerator NavMeshSurfacePrefab_AfterBakingInPrefabMode_DoesNotActivateItsNavMesh()
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
+        AssetDatabase.OpenAsset(prefab);
+        var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+        var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
+        NavMeshAssetManager.instance.ClearSurfaces(new Object[] { prefabSurface });
+        prefabStage.SavePrefab();
+
+        yield return BakeNavMeshAsync(() => prefabSurface, k_RedArea);
+
+        NavMeshHit hit;
+        NavMesh.SamplePosition(Vector3.zero, out hit, 1000000f, new NavMeshQueryFilter { areaMask = NavMesh.AllAreas, agentTypeID = 0 });
+        Assert.That(hit.hit, Is.False, "The NavMesh instance of a prefab opened for edit should not be active after baking the surface.");
+
+        prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+        prefabStage.SavePrefab();
+
+        NavMesh.SamplePosition(Vector3.zero, out hit, 1000000f, new NavMeshQueryFilter { areaMask = NavMesh.AllAreas, agentTypeID = 0 });
+        Assert.That(hit.hit, Is.False, "The NavMesh instance of a prefab opened for edit should not be active after baking the surface.");
+    }
+
+    [UnityTest]
+    public IEnumerator NavMeshSurfacePrefab_AfterBakingInPrefabMode_LeavesMainSceneUntouched()
     {
         Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero));
 
