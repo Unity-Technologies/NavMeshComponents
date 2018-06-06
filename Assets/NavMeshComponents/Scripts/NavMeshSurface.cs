@@ -13,7 +13,7 @@ namespace UnityEngine.AI
         Children = 2,
     }
 
-    [ExecuteInEditMode]
+    [ExecuteAlways]
     [DefaultExecutionOrder(-102)]
     [AddComponentMenu("Navigation/NavMeshSurface", 30)]
     [HelpURL("https://github.com/Unity-Technologies/NavMeshComponents#documentation-draft")]
@@ -105,6 +105,16 @@ namespace UnityEngine.AI
 
         public void AddData()
         {
+#if UNITY_EDITOR
+            var isInPreviewScene = EditorSceneManager.IsPreviewSceneObject(this);
+            var isPrefab = isInPreviewScene || EditorUtility.IsPersistent(this);
+            if (isPrefab)
+            {
+                //Debug.LogFormat("NavMeshData from {0}.{1} will not be added to the NavMesh world because the gameObject is a prefab.",
+                //    gameObject.name, name);
+                return;
+            }
+#endif
             if (m_NavMeshDataInstance.valid)
                 return;
 
@@ -186,6 +196,16 @@ namespace UnityEngine.AI
 
         static void Register(NavMeshSurface surface)
         {
+#if UNITY_EDITOR
+            var isInPreviewScene = EditorSceneManager.IsPreviewSceneObject(surface);
+            var isPrefab = isInPreviewScene || EditorUtility.IsPersistent(surface);
+            if (isPrefab)
+            {
+                //Debug.LogFormat("NavMeshData from {0}.{1} will not be added to the NavMesh world because the gameObject is a prefab.",
+                //    surface.gameObject.name, surface.name);
+                return;
+            }
+#endif
             if (s_NavMeshSurfaces.Count == 0)
                 NavMesh.onPreUpdate += UpdateActive;
 
