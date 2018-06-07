@@ -101,7 +101,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => prefabSurface, k_PrefabDefaultArea);
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
         StageUtility.GoToMainStage();
 
         NavMesh.RemoveAllNavMeshData();
@@ -186,7 +186,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         NavMeshAssetManager.instance.ClearSurfaces(new Object[] { prefabSurface });
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
 
         yield return BakeNavMeshAsync(() => prefabSurface, k_RedArea);
 
@@ -195,7 +195,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.That(hit.hit, Is.False, "The NavMesh instance of a prefab opened for edit should not be active after baking the surface.");
 
         prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
 
         NavMesh.SamplePosition(Vector3.zero, out hit, 1000000f, new NavMeshQueryFilter { areaMask = NavMesh.AllAreas, agentTypeID = 0 });
         Assert.That(hit.hit, Is.False, "The NavMesh instance of a prefab opened for edit should not be active after baking the surface.");
@@ -218,7 +218,7 @@ public class NavMeshSurfaceInPrefabTests
 
         Assert.AreNotSame(initialPrefabNavMeshData, prefabSurface.navMeshData);
 
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
         StageUtility.GoToMainStage();
 
         Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, NavMesh.AllAreas, 0, 1000.0f));
@@ -284,7 +284,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         NavMeshAssetManager.instance.ClearSurfaces(new Object[] { prefabSurface });
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
 
         StageUtility.GoToMainStage();
         Assert.IsTrue(instanceSurface.navMeshData == null,
@@ -313,7 +313,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => prefabSurface, k_RedArea);
 
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
 
         StageUtility.GoToMainStage();
 
@@ -477,7 +477,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         var initialPrefabNavMeshData = prefabSurface.navMeshData;
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
         StageUtility.GoToMainStage();
 
         AssetDatabase.OpenAsset(prefab);
@@ -576,7 +576,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsTrue(unsavedRebakedNavMeshData == null, "An unsaved NavMeshData should not exist after a re-bake.");
         Assert.IsTrue(prefabSurface.navMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
 
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
         Assert.IsFalse(System.IO.File.Exists(initialAssetPath), "NavMeshData file still exists after saving. ({0})", initialAssetPath);
         Assert.IsTrue(initialNavMeshData == null, "The initial NavMeshData must no longer exist after saving the prefab.");
 
@@ -684,7 +684,7 @@ public class NavMeshSurfaceInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
         StageUtility.GoToMainStage();
 
         TestNavMeshExistsAloneAtPosition(k_GrayArea, Vector3.zero);
@@ -802,7 +802,7 @@ public class NavMeshSurfaceInPrefabTests
         prefabSurface.collectObjects = CollectObjects.All;
         yield return BakeNavMeshAsync(() => prefabSurface, k_RedArea);
 
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
         StageUtility.GoToMainStage();
 
         var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;

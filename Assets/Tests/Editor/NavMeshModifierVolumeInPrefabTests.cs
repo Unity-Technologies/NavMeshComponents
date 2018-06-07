@@ -126,7 +126,7 @@ public class NavMeshModifierVolumeInPrefabTests
         modifierVolume.center = Vector3.zero;
         modifierVolume.size = Vector3.one;
         yield return BakeNavMeshAsync(() => prefabSurface, k_PrefabDefaultArea);
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
         StageUtility.GoToMainStage();
 
         NavMeshHit hitCenter;
@@ -179,7 +179,7 @@ public class NavMeshModifierVolumeInPrefabTests
         // bake the NavMeshSurface from the main scene while the prefab mode is open
         yield return BakeNavMeshAsync(() => mainSceneSurface, mainSceneSurface.defaultArea);
 
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
         StageUtility.GoToMainStage();
 
@@ -218,7 +218,7 @@ public class NavMeshModifierVolumeInPrefabTests
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => prefabSurface, k_PrefabDefaultArea);
-        prefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabStage);
         StageUtility.GoToMainStage();
 
         NavMesh.SamplePosition(Vector3.zero, out hit, 0.1f, filter);

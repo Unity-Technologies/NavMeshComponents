@@ -95,7 +95,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         var theOriginalPrefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         var theOriginalPrefabSurface = theOriginalPrefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
         yield return BakeNavMeshAsync(() => theOriginalPrefabSurface, k_PrefabDefaultArea);
-        theOriginalPrefabStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(theOriginalPrefabStage);
         StageUtility.GoToMainStage();
 
         PrefabUtility.CreateVariant(planePrefab, m_PrefabVariantPath);
@@ -168,7 +168,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         Assert.IsTrue(unsavedRebakedNavMeshData == null, "An unsaved NavMeshData should not exist after a re-bake.");
         Assert.IsTrue(prefabVariantSurface.navMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
 
-        prefabVariantStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabVariantStage);
 
         var theNewVariantNavMeshData = prefabVariantSurface.navMeshData;
         var theNewVariantAssetPath = AssetDatabase.GetAssetPath(theNewVariantNavMeshData);
@@ -203,7 +203,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         var prefabVariantSurface = prefabVariantStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
 
         yield return BakeNavMeshAsync(() => prefabVariantSurface, k_GrayArea);
-        prefabVariantStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabVariantStage);
 
         var modifiedVariantNavMeshData = prefabVariantSurface.navMeshData;
         var modifiedVariantAssetPath = AssetDatabase.GetAssetPath(prefabVariantSurface.navMeshData);
@@ -224,7 +224,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         Assert.IsTrue(unsavedRebakedNavMeshData == null, "An unsaved NavMeshData should not exist after a re-bake.");
         Assert.IsTrue(prefabVariantSurface.navMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
 
-        prefabVariantStage.SavePrefab();
+        PrefabSavingUtil.SavePrefab(prefabVariantStage);
         var theNewVariantNavMeshData = prefabVariantSurface.navMeshData;
         var theNewVariantAssetPath = AssetDatabase.GetAssetPath(theNewVariantNavMeshData);
 
