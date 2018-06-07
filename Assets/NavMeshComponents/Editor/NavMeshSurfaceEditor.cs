@@ -243,11 +243,12 @@ namespace UnityEditor.AI
             var rectLabel = EditorGUI.PrefixLabel(nmdRect, GUIUtility.GetControlID(FocusType.Passive), new GUIContent(m_NavMeshData.displayName));
             EditorGUI.EndProperty();
 
-            EditorGUI.BeginDisabled(true);
-            EditorGUI.BeginProperty(nmdRect, GUIContent.none, m_NavMeshData);
-            EditorGUI.ObjectField(rectLabel, m_NavMeshData, GUIContent.none);
-            EditorGUI.EndProperty();
-            EditorGUI.EndDisabled();
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUI.BeginProperty(nmdRect, GUIContent.none, m_NavMeshData);
+                EditorGUI.ObjectField(rectLabel, m_NavMeshData, GUIContent.none);
+                EditorGUI.EndProperty();
+            }
 #endif
             using (new EditorGUI.DisabledScope(Application.isPlaying || m_AgentTypeID.intValue == -1))
             {
