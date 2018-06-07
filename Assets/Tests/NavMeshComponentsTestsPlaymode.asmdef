@@ -1,5 +1,5 @@
 {
-    "name": "NavMeshComponentsPlaymodeTests",
+    "name": "NavMeshComponentsTestsPlaymode",
     "references": [
         "NavMeshComponents"
     ],
