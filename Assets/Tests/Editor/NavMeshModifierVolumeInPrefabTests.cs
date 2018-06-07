@@ -66,7 +66,7 @@ public class NavMeshModifierVolumeInPrefabTests
         PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(SessionState.GetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave()));
         StageUtility.GoToMainStage();
 
-        EditorSceneManager.ClearSceneDirtiness(SceneManager.GetActiveScene());
+        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
 
         if (string.IsNullOrEmpty(m_PreviousScenePath))
         {

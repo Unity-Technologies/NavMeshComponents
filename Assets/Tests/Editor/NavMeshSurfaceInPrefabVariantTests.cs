@@ -65,7 +65,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(SessionState.GetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave()));
         StageUtility.GoToMainStage();
 
-        EditorSceneManager.ClearSceneDirtiness(SceneManager.GetActiveScene());
+        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
 
         if (string.IsNullOrEmpty(m_PreviousScenePath))
         {
@@ -186,7 +186,8 @@ public class NavMeshSurfaceInPrefabVariantTests
     public IEnumerator NavMeshSurfacePrefabVariant_WhenCustomizedAndRebaked_OldAssetDiscardedAndParentAssetUnchanged()
     {
         var prefabVariant = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabVariantPath);
-        var theOriginalPrefab = PrefabUtility.GetOriginalSourceOrVariantRoot(prefabVariant);
+        var theOriginalPrefabPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(prefabVariant);
+        var theOriginalPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(theOriginalPrefabPath);
 
         AssetDatabase.OpenAsset(theOriginalPrefab);
         var theOriginalPrefabStage = PrefabStageUtility.GetCurrentPrefabStage();

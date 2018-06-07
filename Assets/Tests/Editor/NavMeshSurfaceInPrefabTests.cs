@@ -70,7 +70,7 @@ public class NavMeshSurfaceInPrefabTests
         PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(SessionState.GetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave()));
         StageUtility.GoToMainStage();
 
-        EditorSceneManager.ClearSceneDirtiness(SceneManager.GetActiveScene());
+        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
 
         if (string.IsNullOrEmpty(m_PreviousScenePath))
         {
@@ -640,7 +640,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsTrue(System.IO.File.Exists(initialInstanceAssetPath),
             "Prefab's NavMeshData file exists after the instance has changed. ({0})", initialInstanceAssetPath);
 
-        PrefabUtility.ApplyPrefabInstance(instance);
+        PrefabUtility.ApplyPrefabInstance(instance, InteractionMode.AutomatedAction);
 
         Assert.IsFalse(System.IO.File.Exists(initialInstanceAssetPath),
             "Prefab's NavMeshData file still exists after the changes from the instance have been applied back to the prefab. ({0})",
@@ -676,7 +676,7 @@ public class NavMeshSurfaceInPrefabTests
         TestNavMeshExistsAloneAtPosition(k_RedArea, Vector3.zero);
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, instanceTwo.transform.position);
 
-        PrefabUtility.ApplyPrefabInstance(instanceOne);
+        PrefabUtility.ApplyPrefabInstance(instanceOne, InteractionMode.AutomatedAction);
 
         TestNavMeshExistsAloneAtPosition(k_RedArea, instanceTwo.transform.position);
 
@@ -713,7 +713,7 @@ public class NavMeshSurfaceInPrefabTests
         var expectedAreaMask = 1 << k_PrefabDefaultArea;
         Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, expectedAreaMask));
 
-        PrefabUtility.ApplyPrefabInstance(instance);
+        PrefabUtility.ApplyPrefabInstance(instance, InteractionMode.AutomatedAction);
 
         AssetDatabase.OpenAsset(prefab);
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
@@ -744,7 +744,7 @@ public class NavMeshSurfaceInPrefabTests
 
         TestNavMeshExistsAloneAtPosition(k_RedArea, Vector3.zero);
 
-        PrefabUtility.RevertPrefabInstance(instance);
+        PrefabUtility.RevertPrefabInstance(instance, InteractionMode.AutomatedAction);
 
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
@@ -771,7 +771,7 @@ public class NavMeshSurfaceInPrefabTests
 
         Assert.IsTrue(System.IO.File.Exists(instanceAssetPath), "Instance's NavMeshData file must exist. ({0})", instanceAssetPath);
 
-        PrefabUtility.RevertPrefabInstance(instance);
+        PrefabUtility.RevertPrefabInstance(instance, InteractionMode.AutomatedAction);
 
         Assert.IsFalse(System.IO.File.Exists(instanceAssetPath), "Instance's NavMeshData file still exists after revert. ({0})", instanceAssetPath);
 
