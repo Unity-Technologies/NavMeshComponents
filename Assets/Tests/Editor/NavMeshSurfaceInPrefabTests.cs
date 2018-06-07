@@ -53,8 +53,8 @@ public class NavMeshSurfaceInPrefabTests
             m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
         //}
 
-        SessionState.SetBool(k_AutoSaveKey, StageNavigationManager.instance.autoSave);
-        StageNavigationManager.instance.autoSave = false;
+        SessionState.SetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave());
+        PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(false);
         StageUtility.GoToMainStage();
 
         m_PreviousScenePath = SceneManager.GetActiveScene().path;
@@ -67,7 +67,7 @@ public class NavMeshSurfaceInPrefabTests
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        StageNavigationManager.instance.autoSave = SessionState.GetBool(k_AutoSaveKey, StageNavigationManager.instance.autoSave);
+        PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(SessionState.GetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave()));
         StageUtility.GoToMainStage();
 
         EditorSceneManager.ClearSceneDirtiness(SceneManager.GetActiveScene());
@@ -589,8 +589,8 @@ public class NavMeshSurfaceInPrefabTests
     [UnityTest]
     public IEnumerator NavMeshSurfacePrefab_WhenRebakedAndAutoSaved_InstanceHasTheNewNavMeshData()
     {
-        var wasAutoSave = StageNavigationManager.instance.autoSave;
-        StageNavigationManager.instance.autoSave = true;
+        var wasAutoSave = PrefabStageAutoSavingUtil.GetPrefabStageAutoSave();
+        PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(true);
 
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
         AssetDatabase.OpenAsset(prefab);
@@ -613,7 +613,7 @@ public class NavMeshSurfaceInPrefabTests
 
         StageUtility.GoToMainStage();
 
-        StageNavigationManager.instance.autoSave = wasAutoSave;
+        PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(wasAutoSave);
 
         yield return null;
     }

@@ -48,8 +48,8 @@ public class NavMeshSurfaceInPrefabVariantTests
             m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
         //}
 
-        SessionState.SetBool(k_AutoSaveKey, StageNavigationManager.instance.autoSave);
-        StageNavigationManager.instance.autoSave = false;
+        SessionState.SetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave());
+        PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(false);
         StageUtility.GoToMainStage();
 
         m_PreviousScenePath = SceneManager.GetActiveScene().path;
@@ -62,7 +62,7 @@ public class NavMeshSurfaceInPrefabVariantTests
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        StageNavigationManager.instance.autoSave = SessionState.GetBool(k_AutoSaveKey, StageNavigationManager.instance.autoSave);
+        PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(SessionState.GetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave()));
         StageUtility.GoToMainStage();
 
         EditorSceneManager.ClearSceneDirtiness(SceneManager.GetActiveScene());
