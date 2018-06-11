@@ -98,7 +98,9 @@ public class NavMeshSurfaceInPrefabVariantTests
         PrefabSavingUtil.SavePrefab(theOriginalPrefabStage);
         StageUtility.GoToMainStage();
 
-        PrefabUtility.CreateVariant(planePrefab, m_PrefabVariantPath);
+        var instanceForVariant = PrefabUtility.InstantiatePrefab(planePrefab) as GameObject;
+        PrefabUtility.CreatePrefab(m_PrefabVariantPath, instanceForVariant);
+        Object.DestroyImmediate(instanceForVariant);
 
         NavMesh.RemoveAllNavMeshData();
 
