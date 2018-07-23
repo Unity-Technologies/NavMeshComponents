@@ -45,7 +45,7 @@ class NavMeshPrefabInstanceEditor : Editor
         {
             if (GUILayout.Button("Select the Prefab asset to bake or clear the navmesh", EditorStyles.helpBox))
             {
-                Selection.activeObject = PrefabUtility.GetPrefabParent(go);
+                Selection.activeObject = PrefabUtility.GetCorrespondingObjectFromSource(go);
                 EditorGUIUtility.PingObject(Selection.activeObject);
             }
         }
@@ -71,7 +71,7 @@ class NavMeshPrefabInstanceEditor : Editor
         var sources = new List<NavMeshBuildSource>();
         var markups = new List<NavMeshBuildMarkup>();
 
-        NavMeshBuilder.CollectSources(root, ~0, NavMeshCollectGeometry.RenderMeshes, 0, markups, sources);
+        NavMeshBuilder.CollectSources(root, ~0, NavMeshCollectGeometry.RenderMeshes, 0, markups, instance.gameObject.scene, sources);
         var settings = NavMesh.GetSettingsByID(0);
         var bounds = new Bounds(Vector3.zero, 1000.0f * Vector3.one);
         var navmesh = NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, root.position, root.rotation);

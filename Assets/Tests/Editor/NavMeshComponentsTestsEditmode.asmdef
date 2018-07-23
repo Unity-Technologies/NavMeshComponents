@@ -1,0 +1,15 @@
+{
+    "name": "NavMeshComponentsTestsEditmode",
+    "references": [
+        "NavMeshComponents",
+        "NavMeshComponentsEditor"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
