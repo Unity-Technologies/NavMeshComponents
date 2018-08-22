@@ -230,7 +230,7 @@ namespace UnityEngine.AI
         void AppendModifierVolumes(ref List<NavMeshBuildSource> sources)
         {
 #if UNITY_EDITOR
-            var myStage = StageUtility.GetStage(gameObject);
+            var myStage = StageUtility.GetStageHandle(gameObject);
             if (!myStage.IsValid())
                 return;
 #endif
