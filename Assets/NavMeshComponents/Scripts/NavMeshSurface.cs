@@ -230,7 +230,7 @@ namespace UnityEngine.AI
         void AppendModifierVolumes(ref List<NavMeshBuildSource> sources)
         {
 #if UNITY_EDITOR
-            var myStage = StageUtility.GetStage(gameObject);
+            var myStage = StageUtility.GetStageHandle(gameObject);
             if (!myStage.IsValid())
                 return;
 #endif
@@ -299,20 +299,45 @@ namespace UnityEngine.AI
                 markups.Add(markup);
             }
 
-            var scene = gameObject.scene;
-            if (m_CollectObjects == CollectObjects.All)
+#if UNITY_EDITOR
+            if (!EditorApplication.isPlaying)
             {
-                NavMeshBuilder.CollectSources(null, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, scene, sources);
+                if (m_CollectObjects == CollectObjects.All)
+                {
+                    UnityEditor.AI.NavMeshBuilder.CollectSourcesInStage(
+                        null, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, gameObject.scene, sources);
+                }
+                else if (m_CollectObjects == CollectObjects.Children)
+                {
+                    UnityEditor.AI.NavMeshBuilder.CollectSourcesInStage(
+                        transform, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, gameObject.scene, sources);
+                }
+                else if (m_CollectObjects == CollectObjects.Volume)
+                {
+                    Matrix4x4 localToWorld = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+                    var worldBounds = GetWorldBounds(localToWorld, new Bounds(m_Center, m_Size));
+
+                    UnityEditor.AI.NavMeshBuilder.CollectSourcesInStage(
+                        worldBounds, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, gameObject.scene, sources);
+                }
             }
-            else if (m_CollectObjects == CollectObjects.Children)
+            else
+#endif
             {
-                NavMeshBuilder.CollectSources(transform, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, scene, sources);
-            }
-            else if (m_CollectObjects == CollectObjects.Volume)
-            {
-                Matrix4x4 localToWorld = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
-                var worldBounds = GetWorldBounds(localToWorld, new Bounds(m_Center, m_Size));
-                NavMeshBuilder.CollectSources(worldBounds, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, scene, sources);
+                if (m_CollectObjects == CollectObjects.All)
+                {
+                    NavMeshBuilder.CollectSources(null, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, sources);
+                }
+                else if (m_CollectObjects == CollectObjects.Children)
+                {
+                    NavMeshBuilder.CollectSources(transform, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, sources);
+                }
+                else if (m_CollectObjects == CollectObjects.Volume)
+                {
+                    Matrix4x4 localToWorld = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+                    var worldBounds = GetWorldBounds(localToWorld, new Bounds(m_Center, m_Size));
+                    NavMeshBuilder.CollectSources(worldBounds, m_LayerMask, m_UseGeometry, m_DefaultArea, markups, sources);
+                }
             }
 
             if (m_IgnoreNavMeshAgent)
