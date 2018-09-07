@@ -45,7 +45,7 @@ class NavMeshPrefabInstanceEditor : Editor
         {
             if (GUILayout.Button("Select the Prefab asset to bake or clear the navmesh", EditorStyles.helpBox))
             {
-                Selection.activeObject = PrefabUtility.GetPrefabParent(go);
+                Selection.activeObject = PrefabUtility.GetCorrespondingObjectFromSource(go);
                 EditorGUIUtility.PingObject(Selection.activeObject);
             }
         }
