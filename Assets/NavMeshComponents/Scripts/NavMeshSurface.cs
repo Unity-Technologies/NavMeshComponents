@@ -287,7 +287,7 @@ namespace UnityEngine.AI
                 TerrainData terrain;
                 if (sources[i].sourceObject.TryCast(out terrain))
                 {
-                    CollectTrees(sources[i].component, terrain, sources[i].transform, m_LayerMask, m_UseGeometry, 1, sources);
+                    CollectTrees(sources[i].component, terrain, sources[i].transform, m_LayerMask, 1, sources);
                 }
             }
 
@@ -302,7 +302,7 @@ namespace UnityEngine.AI
             return sources;
         }
 
-        private static void CollectTrees(Component owner, TerrainData terrain, Matrix4x4 transform, int layerMask, NavMeshCollectGeometry geometry, int area, List<NavMeshBuildSource> sources)
+        private static void CollectTrees(Component owner, TerrainData terrain, Matrix4x4 transform, int layerMask, int area, List<NavMeshBuildSource> sources)
         {
             var size = terrain.size;
 
@@ -317,15 +317,19 @@ namespace UnityEngine.AI
 
                 foreach (var collider in proto.GetComponentsInChildren<Collider>())
                 {
-                    Matrix4x4 colliderMatrix = proto.transform.worldToLocalMatrix * collider.transform.localToWorldMatrix;
-
-                    NavMeshBuildSource src = new NavMeshBuildSource();
-                    src.area = area;
-                    src.component = owner;
-                    src.sourceObject = null;
-                    if (SetCollider(collider, transform * treeLocal * colliderMatrix, ref src))
+                    // Take into account layer mask
+                    if ((collider.gameObject.layer & layerMask) != 0)
                     {
-                        sources.Add(src);
+                        Matrix4x4 colliderMatrix = proto.transform.worldToLocalMatrix * collider.transform.localToWorldMatrix;
+
+                        NavMeshBuildSource src = new NavMeshBuildSource();
+                        src.area = area;
+                        src.component = owner;
+                        src.sourceObject = null;
+                        if (SetCollider(collider, transform * treeLocal * colliderMatrix, ref src))
+                        {
+                            sources.Add(src);
+                        }
                     }
                 }
             }
