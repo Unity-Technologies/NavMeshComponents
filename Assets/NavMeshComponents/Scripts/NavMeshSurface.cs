@@ -318,7 +318,7 @@ namespace UnityEngine.AI
                 foreach (var collider in proto.GetComponentsInChildren<Collider>())
                 {
                     // Take into account layer mask
-                    if ((collider.gameObject.layer & layerMask) != 0)
+                    if (((1 << collider.gameObject.layer) & layerMask) != 0)
                     {
                         Matrix4x4 colliderMatrix = proto.transform.worldToLocalMatrix * collider.transform.localToWorldMatrix;
 
