@@ -1,9 +1,12 @@
 {
-    "name": "NavMeshComponentsEditor",
+    "name": "NavMeshComponentsTestsEditmode",
     "references": [
-        "NavMeshComponents"
+        "NavMeshComponents",
+        "NavMeshComponentsEditor"
     ],
-    "optionalUnityReferences": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
     "includePlatforms": [
         "Editor"
     ],

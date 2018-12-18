@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
-using NavMeshBuilder = UnityEngine.AI.NavMeshBuilder;
 
 [CanEditMultipleObjects]
 [CustomEditor(typeof(NavMeshPrefabInstance))]
@@ -38,7 +37,7 @@ class NavMeshPrefabInstanceEditor : Editor
 
     void OnInspectorGUIPrefab(GameObject go)
     {
-        var prefab = PrefabUtility.GetPrefabObject(go);
+        var prefab = PrefabUtility.GetPrefabInstanceHandle(go);
         var path = AssetDatabase.GetAssetPath(prefab);
 
         if (prefab && string.IsNullOrEmpty(path))
@@ -71,7 +70,8 @@ class NavMeshPrefabInstanceEditor : Editor
         var sources = new List<NavMeshBuildSource>();
         var markups = new List<NavMeshBuildMarkup>();
 
-        NavMeshBuilder.CollectSources(root, ~0, NavMeshCollectGeometry.RenderMeshes, 0, markups, sources);
+        UnityEditor.AI.NavMeshBuilder.CollectSourcesInStage(
+            root, ~0, NavMeshCollectGeometry.RenderMeshes, 0, markups, instance.gameObject.scene, sources);
         var settings = NavMesh.GetSettingsByID(0);
         var bounds = new Bounds(Vector3.zero, 1000.0f * Vector3.one);
         var navmesh = NavMeshBuilder.BuildNavMeshData(settings, sources, bounds, root.position, root.rotation);
@@ -85,7 +85,7 @@ class NavMeshPrefabInstanceEditor : Editor
         {
             var instance = (NavMeshPrefabInstance)tgt;
             var go = instance.gameObject;
-            var prefab = PrefabUtility.GetPrefabObject(go);
+            var prefab = PrefabUtility.GetPrefabInstanceHandle(go);
             var path = AssetDatabase.GetAssetPath(prefab);
 
             if (string.IsNullOrEmpty(path))
@@ -105,7 +105,7 @@ class NavMeshPrefabInstanceEditor : Editor
         {
             var instance = (NavMeshPrefabInstance)tgt;
             var go = instance.gameObject;
-            var prefab = PrefabUtility.GetPrefabObject(go);
+            var prefab = PrefabUtility.GetPrefabInstanceHandle(go);
             var path = AssetDatabase.GetAssetPath(prefab);
 
             if (string.IsNullOrEmpty(path))

@@ -36,6 +36,7 @@ public class NavMeshSurfaceAgentTests
     }
 
     [Test]
+    [Ignore("1012991 : Missing functionality for notifying the NavMeshAgent about the removal of the NavMesh.")]
     public void AgentDetachesAndAttachesToSurface()
     {
         m_Surface.BuildNavMesh();
