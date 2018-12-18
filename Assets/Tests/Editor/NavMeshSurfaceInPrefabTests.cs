@@ -94,7 +94,7 @@ public class NavMeshSurfaceInPrefabTests
         m_InitialPrefabNavMeshDataPath = AssetDatabase.GetAssetPath(surface.navMeshData);
 #endif
         m_PrefabPath = Path.Combine(m_TempFolder, plane.name + ".prefab");
-        var planePrefab = PrefabUtility.CreatePrefab(m_PrefabPath, plane);
+        var planePrefab = PrefabUtility.SaveAsPrefabAsset(plane, m_PrefabPath);
         Object.DestroyImmediate(plane);
 
         AssetDatabase.OpenAsset(planePrefab);

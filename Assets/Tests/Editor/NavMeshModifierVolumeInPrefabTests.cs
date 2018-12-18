@@ -89,7 +89,7 @@ public class NavMeshModifierVolumeInPrefabTests
         surface.collectObjects = CollectObjects.All;
 
         m_PrefabPath = Path.Combine(m_TempFolder, plane.name + ".prefab");
-        PrefabUtility.CreatePrefab(m_PrefabPath, plane);
+        PrefabUtility.SaveAsPrefabAsset(plane, m_PrefabPath);
         Object.DestroyImmediate(plane);
 
         NavMesh.RemoveAllNavMeshData();

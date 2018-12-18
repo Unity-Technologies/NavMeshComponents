@@ -88,7 +88,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         m_PrefabPath = Path.Combine(m_TempFolder, plane.name + ".prefab");
         m_PrefabVariantPath = Path.Combine(m_TempFolder, plane.name + "Variant.prefab");
 
-        var planePrefab = PrefabUtility.CreatePrefab(m_PrefabPath, plane);
+        var planePrefab = PrefabUtility.SaveAsPrefabAsset(plane, m_PrefabPath);
         Object.DestroyImmediate(plane);
 
         AssetDatabase.OpenAsset(planePrefab);
@@ -99,7 +99,7 @@ public class NavMeshSurfaceInPrefabVariantTests
         StageUtility.GoToMainStage();
 
         var instanceForVariant = PrefabUtility.InstantiatePrefab(planePrefab) as GameObject;
-        PrefabUtility.CreatePrefab(m_PrefabVariantPath, instanceForVariant);
+        PrefabUtility.SaveAsPrefabAsset(instanceForVariant, m_PrefabVariantPath);
         Object.DestroyImmediate(instanceForVariant);
 
         NavMesh.RemoveAllNavMeshData();
