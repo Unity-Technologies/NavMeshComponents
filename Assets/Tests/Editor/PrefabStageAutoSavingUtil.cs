@@ -6,22 +6,22 @@ public static class PrefabStageAutoSavingUtil
 {
     public static bool GetPrefabStageAutoSave()
     {
-        object stageNavMgrInstance = GetStageNavigationManagerInstance();
+        var stageNavMgrInstance = GetStageNavigationManagerInstance();
         var autoSaveProperty = GetAutoSaveProperty(stageNavMgrInstance);
         return (bool)autoSaveProperty.GetValue(stageNavMgrInstance, null);
     }
 
     public static void SetPrefabStageAutoSave(bool value)
     {
-        object stageNavMgrInstance = GetStageNavigationManagerInstance();
+        var stageNavMgrInstance = GetStageNavigationManagerInstance();
         var autoSaveProperty = GetAutoSaveProperty(stageNavMgrInstance);
         autoSaveProperty.SetValue(stageNavMgrInstance, value, null);
     }
 
     static object GetStageNavigationManagerInstance()
     {
-        string editorAssemblyName = typeof(EditorWindow).Assembly.FullName;
-        Type t = Type.GetType("UnityEditor.SceneManagement.StageNavigationManager, " + editorAssemblyName, true, true);
+        var editorAssemblyName = typeof(EditorWindow).Assembly.FullName;
+        var t = Type.GetType("UnityEditor.SceneManagement.StageNavigationManager, " + editorAssemblyName, true, true);
         if (t == null)
             throw new ArgumentException();
 
@@ -41,16 +41,4 @@ public static class PrefabStageAutoSavingUtil
 
         return autoSaveProperty;
     }
-
-    // Used for testing
-    /*
-    [MenuItem("Stage/ToggleAutoSave")]
-    public static void ToggleStageAutoSaving()
-    {
-        object stageNavMgrInstance = GetStageNavigationManagerInstance();
-        var autoSaveProperty = GetAutoSaveProperty(stageNavMgrInstance);
-        bool oldValue = (bool)autoSaveProperty.GetValue(stageNavMgrInstance, null);
-        autoSaveProperty.SetValue(stageNavMgrInstance, !oldValue, null);
-    }
-    */
 }

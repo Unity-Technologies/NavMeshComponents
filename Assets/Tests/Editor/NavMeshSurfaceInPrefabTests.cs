@@ -1,17 +1,17 @@
-﻿//#define NAVMESHSURFACE_CLEANUP_LEAKED_DATA_ASSETS
+﻿//#define KEEP_ARTIFACTS_FOR_INSPECTION
 
 using System;
-using UnityEngine;
-using UnityEngine.TestTools;
-using NUnit.Framework;
 using System.Collections;
 using System.IO;
+using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.AI;
 using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
 [Category("PrefabsWithNavMeshComponents")]
@@ -26,9 +26,6 @@ public class NavMeshSurfaceInPrefabTests
     string m_TempScenePath;
     int m_TestCounter;
 
-    const int k_BlueArea = 0;
-    const int k_PinkArea = 3;
-    const int k_GreenArea = 4;
     const int k_GrayArea = 7;
     const int k_BrownArea = 10;
     const int k_RedArea = 18;
@@ -37,21 +34,13 @@ public class NavMeshSurfaceInPrefabTests
 
     const int k_PrefabDefaultArea = k_YellowArea;
 
-#if NAVMESHSURFACE_CLEANUP_LEAKED_DATA_ASSETS
-    string m_InitialPrefabNavMeshDataPath;
-#endif
-
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
-        //if (System.IO.Directory.Exists(m_TempFolder))
-            AssetDatabase.DeleteAsset(m_TempFolder);
+        AssetDatabase.DeleteAsset(m_TempFolder);
 
-        //if (!System.IO.Directory.Exists(m_TempFolder))
-        //{
-            var folderGUID = AssetDatabase.CreateFolder(k_ParentFolder, k_TempFolderName);
-            m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
-        //}
+        var folderGUID = AssetDatabase.CreateFolder(k_ParentFolder, k_TempFolderName);
+        m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
 
         SessionState.SetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave());
         PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(false);
@@ -77,9 +66,9 @@ public class NavMeshSurfaceInPrefabTests
             EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
         }
 
-        //File.Delete(m_TempScenePath);
-        //if (System.IO.Directory.Exists(m_TempFolder))
-            AssetDatabase.DeleteAsset(m_TempFolder);
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
+        AssetDatabase.DeleteAsset(m_TempFolder);
+#endif
     }
 
     [UnitySetUp]
@@ -90,9 +79,6 @@ public class NavMeshSurfaceInPrefabTests
         var surface = plane.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.Children;
 
-#if NAVMESHSURFACE_CLEANUP_LEAKED_DATA_ASSETS
-        m_InitialPrefabNavMeshDataPath = AssetDatabase.GetAssetPath(surface.navMeshData);
-#endif
         m_PrefabPath = Path.Combine(m_TempFolder, plane.name + ".prefab");
         var planePrefab = PrefabUtility.SaveAsPrefabAsset(plane, m_PrefabPath);
         Object.DestroyImmediate(plane);
@@ -112,32 +98,12 @@ public class NavMeshSurfaceInPrefabTests
     [UnityTearDown]
     public IEnumerator TearDown()
     {
-        //if (System.IO.File.Exists(m_PrefabPath))
-        //{
-        //    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
-        //    AssetDatabase.OpenAsset(prefab);
-        //    var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
-        //    if (prefabStage != null && prefabStage.prefabContentsRoot != null)
-        //    {
-        //        var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
-        //        if (prefabSurface != null)
-        //        {
-        //            NavMeshDataAssetManager.instance.ClearSurfaces(new Object[] { prefabSurface });
-        //        }
-        //    }
-
-        //    AssetDatabase.DeleteAsset(m_PrefabPath);
-        //}
-
         var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
         if (prefabStage != null)
             prefabStage.ClearDirtiness();
 
         StageUtility.GoToMainStage();
 
-#if NAVMESHSURFACE_CLEANUP_LEAKED_DATA_ASSETS
-        AssetDatabase.DeleteAsset(m_InitialPrefabNavMeshDataPath);
-#endif
         yield return null;
     }
 
@@ -150,7 +116,7 @@ public class NavMeshSurfaceInPrefabTests
         Debug.Log(" mask=" + expectedAreaMask.ToString("x8") + " area " + expectedArea + " Exists=" + areaExists + " otherAreasExist=" + otherAreasExist + " at position " + pos);
         if (otherAreasExist)
         {
-            for (int i = 0; i < 32; i++)
+            for (var i = 0; i < 32; i++)
             {
                 if (i == expectedArea)
                     continue;
@@ -264,9 +230,10 @@ public class NavMeshSurfaceInPrefabTests
 
         StageUtility.GoToMainStage();
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
         Object.DestroyImmediate(instanceClone);
-
+#endif
         yield return null;
     }
 
@@ -292,8 +259,9 @@ public class NavMeshSurfaceInPrefabTests
         var expectedAreaMask = 1 << k_PrefabDefaultArea;
         Assert.IsFalse(HasNavMeshAtPosition(Vector3.zero, expectedAreaMask));
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
-
+#endif
         yield return null;
     }
 
@@ -333,9 +301,10 @@ public class NavMeshSurfaceInPrefabTests
         TestNavMeshExistsAloneAtPosition(k_BrownArea, Vector3.zero);
         TestNavMeshExistsAloneAtPosition(k_RedArea, instanceTwo.transform.position);
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instanceOne);
         Object.DestroyImmediate(instanceTwo);
-
+#endif
         yield return null;
     }
 
@@ -377,9 +346,10 @@ public class NavMeshSurfaceInPrefabTests
 
         StageUtility.GoToMainStage();
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
         Object.DestroyImmediate(instanceClone);
-
+#endif
         yield return null;
     }
 
@@ -420,9 +390,10 @@ public class NavMeshSurfaceInPrefabTests
 
         StageUtility.GoToMainStage();
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
         Object.DestroyImmediate(instanceClone);
-
+#endif
         yield return null;
     }
 
@@ -452,8 +423,9 @@ public class NavMeshSurfaceInPrefabTests
 
         StageUtility.GoToMainStage();
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
-
+#endif
         yield return null;
     }
 
@@ -492,8 +464,9 @@ public class NavMeshSurfaceInPrefabTests
         StageUtility.GoToMainStage();
         Assert.AreSame(instanceNavMeshData, instanceSurface.navMeshData);
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
-
+#endif
         yield return null;
     }
 
@@ -539,12 +512,12 @@ public class NavMeshSurfaceInPrefabTests
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
         var rebakedAssetPath = AssetDatabase.GetAssetPath(prefabSurface.navMeshData);
 
-        Assert.IsTrue(System.IO.File.Exists(rebakedAssetPath), "NavMeshData file must exist. ({0})", rebakedAssetPath);
+        Assert.IsTrue(File.Exists(rebakedAssetPath), "NavMeshData file must exist. ({0})", rebakedAssetPath);
 
         prefabStage.ClearDirtiness();
         StageUtility.GoToMainStage();
 
-        Assert.IsFalse(System.IO.File.Exists(rebakedAssetPath), "NavMeshData file still exists after discarding the changes. ({0})", rebakedAssetPath);
+        Assert.IsFalse(File.Exists(rebakedAssetPath), "NavMeshData file still exists after discarding the changes. ({0})", rebakedAssetPath);
 
         yield return null;
     }
@@ -561,12 +534,12 @@ public class NavMeshSurfaceInPrefabTests
 
         // Assert.IsNull cannot verify correctly that an UnityEngine.Object is null
         Assert.IsTrue(initialNavMeshData != null, "Prefab must have some NavMeshData.");
-        Assert.IsTrue(System.IO.File.Exists(initialAssetPath), "NavMeshData file must exist. ({0})", initialAssetPath);
+        Assert.IsTrue(File.Exists(initialAssetPath), "NavMeshData file must exist. ({0})", initialAssetPath);
 
         yield return BakeNavMeshAsync(() => prefabSurface, k_GrayArea);
 
         Assert.IsTrue(initialNavMeshData != null, "The initial NavMeshData must still exist immediately after prefab re-bake.");
-        Assert.IsTrue(System.IO.File.Exists(initialAssetPath), "The initial NavMeshData file must exist after prefab re-bake. ({0})", initialAssetPath);
+        Assert.IsTrue(File.Exists(initialAssetPath), "The initial NavMeshData file must exist after prefab re-bake. ({0})", initialAssetPath);
 
         Assert.IsTrue(prefabSurface.navMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
         var unsavedRebakedNavMeshData = prefabSurface.navMeshData;
@@ -577,7 +550,7 @@ public class NavMeshSurfaceInPrefabTests
         Assert.IsTrue(prefabSurface.navMeshData != null, "NavMeshSurface must have NavMeshData after baking.");
 
         PrefabSavingUtil.SavePrefab(prefabStage);
-        Assert.IsFalse(System.IO.File.Exists(initialAssetPath), "NavMeshData file still exists after saving. ({0})", initialAssetPath);
+        Assert.IsFalse(File.Exists(initialAssetPath), "NavMeshData file still exists after saving. ({0})", initialAssetPath);
         Assert.IsTrue(initialNavMeshData == null, "The initial NavMeshData must no longer exist after saving the prefab.");
 
         // ReSharper disable once HeuristicUnreachableCode - initialNavMeshData is affected by BakeNavMeshAsync()
@@ -618,7 +591,7 @@ public class NavMeshSurfaceInPrefabTests
         yield return null;
     }
 
-    [Ignore("Deletion of the old asset is expected to be done manually for the time being.")]
+    [Ignore("Currently the deletion of the old asset must be done manually.")]
     [UnityTest]
     public IEnumerator NavMeshSurfacePrefab_AfterModifiedInstanceAppliedBack_TheOldAssetNoLongerExists()
     {
@@ -633,21 +606,22 @@ public class NavMeshSurfaceInPrefabTests
 
         var initialInstanceAssetPath = AssetDatabase.GetAssetPath(instanceSurface.navMeshData);
 
-        Assert.IsTrue(System.IO.File.Exists(initialInstanceAssetPath), "Prefab's NavMeshData file must exist. ({0})", initialInstanceAssetPath);
+        Assert.IsTrue(File.Exists(initialInstanceAssetPath), "Prefab's NavMeshData file must exist. ({0})", initialInstanceAssetPath);
 
         yield return BakeNavMeshAsync(() => instanceSurface, k_RedArea);
 
-        Assert.IsTrue(System.IO.File.Exists(initialInstanceAssetPath),
+        Assert.IsTrue(File.Exists(initialInstanceAssetPath),
             "Prefab's NavMeshData file exists after the instance has changed. ({0})", initialInstanceAssetPath);
 
         PrefabUtility.ApplyPrefabInstance(instance, InteractionMode.AutomatedAction);
 
-        Assert.IsFalse(System.IO.File.Exists(initialInstanceAssetPath),
+        Assert.IsFalse(File.Exists(initialInstanceAssetPath),
             "Prefab's NavMeshData file still exists after the changes from the instance have been applied back to the prefab. ({0})",
             initialInstanceAssetPath);
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
-
+#endif
         yield return null;
     }
 
@@ -690,9 +664,10 @@ public class NavMeshSurfaceInPrefabTests
         TestNavMeshExistsAloneAtPosition(k_GrayArea, Vector3.zero);
         TestNavMeshExistsAloneAtPosition(k_GrayArea, instanceTwo.transform.position);
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instanceOne);
         Object.DestroyImmediate(instanceTwo);
-
+#endif
         yield return null;
     }
 
@@ -724,8 +699,9 @@ public class NavMeshSurfaceInPrefabTests
 
         StageUtility.GoToMainStage();
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
-
+#endif
         yield return null;
     }
 
@@ -748,8 +724,9 @@ public class NavMeshSurfaceInPrefabTests
 
         TestNavMeshExistsAloneAtPosition(k_PrefabDefaultArea, Vector3.zero);
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
-
+#endif
         yield return null;
     }
 
@@ -769,23 +746,24 @@ public class NavMeshSurfaceInPrefabTests
 
         var instanceAssetPath = AssetDatabase.GetAssetPath(instanceSurface.navMeshData);
 
-        Assert.IsTrue(System.IO.File.Exists(instanceAssetPath), "Instance's NavMeshData file must exist. ({0})", instanceAssetPath);
+        Assert.IsTrue(File.Exists(instanceAssetPath), "Instance's NavMeshData file must exist. ({0})", instanceAssetPath);
 
         PrefabUtility.RevertPrefabInstance(instance, InteractionMode.AutomatedAction);
 
-        Assert.IsFalse(System.IO.File.Exists(instanceAssetPath), "Instance's NavMeshData file still exists after revert. ({0})", instanceAssetPath);
+        Assert.IsFalse(File.Exists(instanceAssetPath), "Instance's NavMeshData file still exists after revert. ({0})", instanceAssetPath);
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
-
+#endif
         yield return null;
     }
 
-    [Ignore("Undefined expected behaviour for the time being.")]
+    [Ignore("The expected behaviour has not been decided.")]
     [UnityTest]
     public IEnumerator NavMeshSurfacePrefab_WhenDeleted_InstancesMakeCopiesOfData()
     {
-        Assert.IsTrue(false);
         yield return null;
+        Assert.Fail("not implemented yet");
     }
 
     [UnityTest]
@@ -815,9 +793,10 @@ public class NavMeshSurfaceInPrefabTests
             "NavMesh with the prefab's area exists at position {1}, outside the prefab's plane. ({0})",
             k_RedArea, posNearby);
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
         Object.DestroyImmediate(instance);
         Object.DestroyImmediate(mainScenePlane);
-
+#endif
         yield return null;
     }
 

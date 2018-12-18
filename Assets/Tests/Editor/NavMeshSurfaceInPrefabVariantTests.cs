@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define KEEP_ARTIFACTS_FOR_INSPECTION
+
+using System;
 using System.Collections;
 using System.IO;
 using NUnit.Framework;
@@ -25,9 +27,6 @@ public class NavMeshSurfaceInPrefabVariantTests
     string m_TempScenePath;
     int m_TestCounter;
 
-    const int k_BlueArea = 0;
-    const int k_PinkArea = 3;
-    const int k_GreenArea = 4;
     const int k_GrayArea = 7;
     const int k_BrownArea = 10;
     const int k_RedArea = 18;
@@ -39,14 +38,10 @@ public class NavMeshSurfaceInPrefabVariantTests
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
-        //if (System.IO.Directory.Exists(m_TempFolder))
-            AssetDatabase.DeleteAsset(m_TempFolder);
+        AssetDatabase.DeleteAsset(m_TempFolder);
 
-        //if (!System.IO.Directory.Exists(m_TempFolder))
-        //{
-            var folderGUID = AssetDatabase.CreateFolder(k_ParentFolder, k_TempFolderName);
-            m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
-        //}
+        var folderGUID = AssetDatabase.CreateFolder(k_ParentFolder, k_TempFolderName);
+        m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
 
         SessionState.SetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave());
         PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(false);
@@ -72,9 +67,9 @@ public class NavMeshSurfaceInPrefabVariantTests
             EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
         }
 
-        //File.Delete(m_TempScenePath);
-        //if (System.IO.Directory.Exists(m_TempFolder))
-            AssetDatabase.DeleteAsset(m_TempFolder);
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
+        AssetDatabase.DeleteAsset(m_TempFolder);
+#endif
     }
 
     [UnitySetUp]
@@ -100,8 +95,10 @@ public class NavMeshSurfaceInPrefabVariantTests
 
         var instanceForVariant = PrefabUtility.InstantiatePrefab(planePrefab) as GameObject;
         PrefabUtility.SaveAsPrefabAsset(instanceForVariant, m_PrefabVariantPath);
-        Object.DestroyImmediate(instanceForVariant);
 
+#if !KEEP_ARTIFACTS_FOR_INSPECTION
+        Object.DestroyImmediate(instanceForVariant);
+#endif
         NavMesh.RemoveAllNavMeshData();
 
         yield return null;
@@ -110,23 +107,6 @@ public class NavMeshSurfaceInPrefabVariantTests
     [UnityTearDown]
     public IEnumerator TearDown()
     {
-        //if (System.IO.File.Exists(m_PrefabPath))
-        //{
-        //    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(m_PrefabPath);
-        //    AssetDatabase.OpenAsset(prefab);
-        //    var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
-        //    if (prefabStage != null && prefabStage.prefabContentsRoot != null)
-        //    {
-        //        var prefabSurface = prefabStage.prefabContentsRoot.GetComponent<NavMeshSurface>();
-        //        if (prefabSurface != null)
-        //        {
-        //            NavMeshDataAssetManager.instance.ClearSurfaces(new Object[] { prefabSurface });
-        //        }
-        //    }
-
-        //    AssetDatabase.DeleteAsset(m_PrefabPath);
-        //}
-
         StageUtility.GoToMainStage();
 
         yield return null;
@@ -249,41 +229,4 @@ public class NavMeshSurfaceInPrefabVariantTests
         NavMeshAssetManager.instance.StartBakingSurfaces(new Object[] { surface });
         yield return new WaitWhile(() => NavMeshAssetManager.instance.IsSurfaceBaking(surface));
     }
-
-    //static void TestNavMeshExistsAloneAtPosition(int expectedArea, Vector3 pos)
-    //{
-    //    var expectedAreaMask = 1 << expectedArea;
-
-    //    var areaExists = HasNavMeshAtPosition(pos, expectedAreaMask);
-    //    var otherAreasExist = HasNavMeshAtPosition(pos, ~expectedAreaMask);
-    //    Debug.Log(" mask=" + expectedAreaMask.ToString("x8") + " area " + expectedArea + " Exists=" + areaExists + " otherAreasExist=" + otherAreasExist + " at position " + pos);
-    //    if (otherAreasExist)
-    //    {
-    //        for (int i = 0; i < 32; i++)
-    //        {
-    //            if (i == expectedArea)
-    //                continue;
-
-    //            var thisOtherAreaExists = HasNavMeshAtPosition(pos, 1 << i);
-    //            if (thisOtherAreaExists)
-    //            {
-    //                Debug.Log(" _another area that exists here " + i);
-    //            }
-    //        }
-    //    }
-
-    //    Assert.IsTrue(HasNavMeshAtPosition(pos, expectedAreaMask), "Expected NavMesh with area {0} at position {1}.", expectedArea, pos);
-    //    Assert.IsFalse(HasNavMeshAtPosition(pos, ~expectedAreaMask), "A NavMesh with an area other than {0} exists at position {1}.", expectedArea, pos);
-    //}
-
-    //public static bool HasNavMeshAtPosition(Vector3 pos, int areaMask = NavMesh.AllAreas, int agentTypeId = 0, float range = 0.1f)
-    //{
-    //    NavMeshHit hit;
-    //    var filter = new NavMeshQueryFilter
-    //    {
-    //        areaMask = areaMask,
-    //        agentTypeID = agentTypeId
-    //    };
-    //    return NavMesh.SamplePosition(pos, out hit, range, filter);
-    //}
 }

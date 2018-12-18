@@ -26,28 +26,19 @@ public class NavMeshModifierVolumeInPrefabTests
     string m_TempScenePath;
     int m_TestCounter;
 
-    const int k_BlueArea = 0;
     const int k_PinkArea = 3;
     const int k_GreenArea = 4;
-    const int k_GrayArea = 7;
-    const int k_BrownArea = 10;
     const int k_RedArea = 18;
-    const int k_OrangeArea = 26;
-    const int k_YellowArea = 30;
 
     const int k_PrefabDefaultArea = k_GreenArea;
 
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
-        //if (System.IO.Directory.Exists(m_TempFolder))
-            AssetDatabase.DeleteAsset(m_TempFolder);
+        AssetDatabase.DeleteAsset(m_TempFolder);
 
-        //if (!System.IO.Directory.Exists(m_TempFolder))
-        //{
-            var folderGUID = AssetDatabase.CreateFolder(k_ParentFolder, k_TempFolderName);
-            m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
-        //}
+        var folderGUID = AssetDatabase.CreateFolder(k_ParentFolder, k_TempFolderName);
+        m_TempFolder = AssetDatabase.GUIDToAssetPath(folderGUID);
 
         SessionState.SetBool(k_AutoSaveKey, PrefabStageAutoSavingUtil.GetPrefabStageAutoSave());
         PrefabStageAutoSavingUtil.SetPrefabStageAutoSave(false);
@@ -74,9 +65,7 @@ public class NavMeshModifierVolumeInPrefabTests
         }
 
 #if !KEEP_ARTIFACTS_FOR_INSPECTION
-        //File.Delete(m_TempScenePath);
-        //if (System.IO.Directory.Exists(m_TempFolder))
-            AssetDatabase.DeleteAsset(m_TempFolder);
+        AssetDatabase.DeleteAsset(m_TempFolder);
 #endif
     }
 
