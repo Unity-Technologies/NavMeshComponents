@@ -1,4 +1,5 @@
 ﻿//#define KEEP_ARTIFACTS_FOR_INSPECTION
+//#define ENABLE_TEST_LOGS
 
 using System;
 using System.Collections;
@@ -111,9 +112,11 @@ public class NavMeshSurfaceInPrefabTests
     {
         var expectedAreaMask = 1 << expectedArea;
 
+#if ENABLE_TEST_LOGS
         var areaExists = HasNavMeshAtPosition(pos, expectedAreaMask);
         var otherAreasExist = HasNavMeshAtPosition(pos, ~expectedAreaMask);
-        Debug.Log(" mask=" + expectedAreaMask.ToString("x8") + " area " + expectedArea + " Exists=" + areaExists + " otherAreasExist=" + otherAreasExist + " at position " + pos);
+        Debug.Log(" mask=" + expectedAreaMask.ToString("x8") + " area " + expectedArea + 
+            " Exists=" + areaExists + " otherAreasExist=" + otherAreasExist + " at position " + pos);
         if (otherAreasExist)
         {
             for (var i = 0; i < 32; i++)
@@ -128,7 +131,7 @@ public class NavMeshSurfaceInPrefabTests
                 }
             }
         }
-
+#endif
         Assert.IsTrue(HasNavMeshAtPosition(pos, expectedAreaMask), "Expected NavMesh with area {0} at position {1}.", expectedArea, pos);
         Assert.IsFalse(HasNavMeshAtPosition(pos, ~expectedAreaMask), "A NavMesh with an area other than {0} exists at position {1}.", expectedArea, pos);
     }
