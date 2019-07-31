@@ -1,7 +1,17 @@
 {
   "dependencies": {
-    "com.unity.package-manager-ui": "2.0.3",
+    "com.unity.2d.sprite": "1.0.0",
+    "com.unity.2d.tilemap": "1.0.0",
+    "com.unity.ide.rider": "1.0.8",
+    "com.unity.ide.visualstudio": "1.0.11",
+    "com.unity.ide.vscode": "1.0.7",
+    "com.unity.multiplayer-hlapi": "1.0.4",
+    "com.unity.test-framework": "1.0.16",
+    "com.unity.timeline": "1.1.0",
+    "com.unity.ugui": "1.0.0",
+    "com.unity.xr.legacyinputhelpers": "2.0.4",
     "com.unity.modules.ai": "1.0.0",
+    "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.audio": "1.0.0",
