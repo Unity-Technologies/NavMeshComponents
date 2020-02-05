@@ -1,4 +1,4 @@
-> Please use the branch matching the version of your Unity editor: [master](../../tree/master) for the latest released version, [2018.3](../../tree/2018.3), [2018.2](../../tree/2018.2), [2018.1](../../tree/2018.1), [2017.2](../../tree/2017.2) for up to 2017.4-LTS, [2017.1](../../tree/2017.1), [5.6](../../tree/5.6).
+> Please use the branch matching the version of your Unity editor: [master](../../tree/master) for the latest released version, [2019.3](../../tree/2019.3), [2018.3](../../tree/2018.3) for up to 2018.4-LTS and 2019.2, [2018.2](../../tree/2018.2), [2018.1](../../tree/2018.1), [2017.2](../../tree/2017.2) for up to 2017.4-LTS, [2017.1](../../tree/2017.1), [5.6](../../tree/5.6).
 
 # Components for Runtime NavMesh Building
 
