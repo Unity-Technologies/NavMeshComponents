@@ -8,6 +8,5 @@
 *.md5     text
 *.compute text
 *.md      text
-*.prefab  text
 */ProjectSettings/*.asset text
 
