@@ -138,7 +138,7 @@ namespace UnityEditor.AI
         [DrawGizmo(GizmoType.Selected | GizmoType.Active | GizmoType.Pickable)]
         static void RenderBoxGizmo(NavMeshLink navLink, GizmoType gizmoType)
         {
-            if (!EditorApplication.isPlaying)
+            if (!EditorApplication.isPlaying && navLink.isActiveAndEnabled)
                 navLink.UpdateLink();
 
             var color = s_HandleColor;
