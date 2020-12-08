@@ -11,20 +11,14 @@ Here we introduce four components for the navigation system:
 
 These components comprise the high level controls for building and using NavMeshes at runtime as well as edit time.
 
-Detailed information can be found in the [Documentation](Documentation) section or in the [NavMesh building components](https://docs.unity3d.com/Manual/NavMesh-BuildingComponents.html) section of the Unity Manual.
+Detailed information can be found in the [Documentation](Documentation~) section or in the [NavMesh building components](https://docs.unity3d.com/Manual/NavMesh-BuildingComponents.html) section of the Unity Manual.
 
-# How To Get Started
+# Setup
 
-Download and install Unity 5.6 or newer.
-
-Clone or download this repository and open the project in Unity.
-Alternatively, you can copy the contents of `Assets/NavMeshComponents` to an existing project. Make sure to select a branch of the repository that matches the Unity version.
-
-Additional examples are available in the `Assets/Examples` folder.
-The examples are provided "as is". They are neither generic nor robust, but serve as inspiration.
-
-_Note: During the beta cycle features and API are subject to change.\
-**Make sure to backup an existing project before opening it with a beta build.**_
+In Unity 2019.4 or newer versions follow the instructions in the manual about [Installing a package from a Git URL](https://docs.unity3d.com/Manual/upm-ui-giturl.html) in order to use this package directly from the GitHub repository.\
+Another way to use the package is by referencing a local clone of this repository in a project as described in the [Installing a package from a local folder](https://docs.unity3d.com/Manual/upm-ui-local.html) instructions.\
+Alternatively, you can copy the contents of the `Editor`, `Gizmos` and `Runtime` folders to an existing project.\
+Additional examples are available in the [Samples~](Samples~) folder. To try them out copy the contents of the folder into a Unity project that references this NavMesh Components package. The examples are provided "as is". They are neither generic nor robust, but serve as inspiration.
 
 # FAQ
 
@@ -58,3 +52,7 @@ A: No - you can still use OffMeshLink - however you'll find that NavMeshLink is 
 
 Q: What happened to HeightMesh and Auto Generated OffMeshLinks?  
 A: They're not supported in the new NavMesh building feature. HeightMesh will be added at some point. Auto OffMeshLink generation will possibly be replaced with a solution that allows better control of placement.
+
+# Notice on the Change of License
+
+Starting with 2020-12-08 the content of this package is [licensed](LICENSE.md) under the [Unity Companion License](https://unity3d.com/legal/licenses/unity_companion_license) for Unity-dependent projects. All content that was accessed under the old MIT license remains under that license.
