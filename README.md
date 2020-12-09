@@ -16,9 +16,13 @@ Detailed information can be found in the [Documentation](Documentation~) section
 
 # Setup
 
-In Unity 2019.4 or newer versions follow the instructions in the manual about [Installing a package from a Git URL](https://docs.unity3d.com/Manual/upm-ui-giturl.html) in order to use this package directly from the GitHub repository.\
-Another way to use the package is by referencing a local clone of this repository in a project as described in the [Installing a package from a local folder](https://docs.unity3d.com/Manual/upm-ui-local.html) instructions.\
-Alternatively, you can copy the contents of the `Editor`, `Gizmos` and `Runtime` folders to an existing project.\
+In Unity 2019.4 or newer versions follow the instructions in the manual about [Installing a package from a Git URL](https://docs.unity3d.com/Manual/upm-ui-giturl.html) in order to use this package directly from the GitHub repository. On short, you can add the following line in the `dependencies` section of you project's `Packages\manifest.json` file.\
+``` "com.unity.ai.navigation.components": "https://github.com/Unity-Technologies/NavMeshComponents.git#package" ```
+
+Another way to use the package is by referencing a local clone of this repository in a project as described in the [Installing a package from a local folder](https://docs.unity3d.com/Manual/upm-ui-local.html) instructions.
+
+Alternatively, you can copy the contents of the `Editor`, `Gizmos` and `Runtime` folders to an existing project.
+
 Additional examples are available in the [Samples~](Samples~) folder. To try them out copy the contents of the folder into a Unity project that references this NavMesh Components package. The examples are provided "as is". They are neither generic nor robust, but serve as inspiration.
 
 # FAQ
