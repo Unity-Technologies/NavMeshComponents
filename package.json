@@ -6,5 +6,12 @@
   "description": "High-level NavMesh components for building and using NavMeshes at runtime and at edit time.",
   "dependencies": {
     "com.unity.modules.ai": "1.0.0"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Build And Connect NavMesh Surfaces",
+      "description": "A set of examples on how to build and use a dynamic navigation space made of NavMesh surfaces and segment-to-segment connections.",
+      "path": "Samples~"
+    }
+  ]
 }
