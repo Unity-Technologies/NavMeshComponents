@@ -99,9 +99,10 @@ namespace UnityEngine.AI
         /// <remarks> This value is in world units. Together with <see cref="tileSize"/> it determines the real size of the individual sections that comprise the NavMesh. </remarks>
         public float voxelSize { get { return m_VoxelSize; } set { m_VoxelSize = value; } }
 
-        // This advanced option for building a Height Mesh is currently not supported 
         [SerializeField]
         bool m_BuildHeightMesh;
+        /// <summary> (Not supported) Gets or sets whether the NavMesh building process produces more detailed elevation information. </summary>
+        /// <seealso href="https://docs.unity3d.com/Manual/nav-HeightMesh.html"/>
         [Obsolete("The buildHeightMesh option has never been implemented as originally intended.")]
         public bool buildHeightMesh { get { return m_BuildHeightMesh; } set { m_BuildHeightMesh = value; } }
 
