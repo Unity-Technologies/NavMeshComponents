@@ -13,5 +13,14 @@
       "description": "A set of examples on how to build and use a dynamic navigation space made of NavMesh surfaces and segment-to-segment connections.",
       "path": "Samples~"
     }
-  ]
+  ],
+  "author": {
+    "name": "Unity Technologies"
+  },
+  "license": "See LICENSE.md file",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Unity-Technologies/NavMeshComponents.git",
+    "revision": "0c64cbdedc3056a332d85c141df89c606fec9e8c"
+  }
 }
