@@ -1,4 +1,5 @@
-> Please use the branch matching the version of your Unity editor: [master](../../tree/master) for the latest released LTS version, [2020.1](../../tree/2020.1), [2019.3](../../tree/2019.3) for up to 2019.4-LTS, [2018.3](../../tree/2018.3) for up to 2018.4-LTS and 2019.2, [2018.2](../../tree/2018.2), [2018.1](../../tree/2018.1), [2017.2](../../tree/2017.2) for up to 2017.4-LTS, [2017.1](../../tree/2017.1), [5.6](../../tree/5.6).
+> Please use the branch matching the version of your Unity editor: [master](../../tree/master) for the latest released LTS version and up to 2020.2, [2019.3](../../tree/2019.3) for up to 2019.4-LTS, [2018.3](../../tree/2018.3) for up to 2018.4-LTS and 2019.2, [2018.2](../../tree/2018.2), [2018.1](../../tree/2018.1), [2017.2](../../tree/2017.2) for up to 2017.4-LTS, [2017.1](../../tree/2017.1), [5.6](../../tree/5.6).\
+> You can use the [package](../../tree/package) branch in Unity 2019.4 or newer in order to add this code to a project in the form of a package. For instructions please refer to the [Setup](../../tree/package#setup) section of the README file.
 
 # Components for Runtime NavMesh Building
 
