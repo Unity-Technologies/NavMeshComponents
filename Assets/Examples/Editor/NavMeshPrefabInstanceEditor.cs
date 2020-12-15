@@ -35,20 +35,30 @@ class NavMeshPrefabInstanceEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
+    string GetAssetPath(GameObject go)
+    {
+        var stage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+        if (stage != null && stage.IsPartOfPrefabContents(go))
+        {
+            return stage.prefabAssetPath;
+        }
+        return PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(go);
+    }
+
     void OnInspectorGUIPrefab(GameObject go)
     {
-        var prefab = PrefabUtility.GetPrefabInstanceHandle(go);
-        var path = AssetDatabase.GetAssetPath(prefab);
-
-        if (prefab && string.IsNullOrEmpty(path))
+        var stage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+        if (stage == null || !stage.IsPartOfPrefabContents(go))
         {
-            if (GUILayout.Button("Select the Prefab asset to bake or clear the navmesh", EditorStyles.helpBox))
+            if (GUILayout.Button("Edit the Prefab asset to bake or clear the navmesh", EditorStyles.helpBox))
             {
                 Selection.activeObject = PrefabUtility.GetCorrespondingObjectFromSource(go);
                 EditorGUIUtility.PingObject(Selection.activeObject);
             }
+            return;
         }
 
+        var path = GetAssetPath(go);
         if (string.IsNullOrEmpty(path))
             return;
 
@@ -85,8 +95,7 @@ class NavMeshPrefabInstanceEditor : Editor
         {
             var instance = (NavMeshPrefabInstance)tgt;
             var go = instance.gameObject;
-            var prefab = PrefabUtility.GetPrefabInstanceHandle(go);
-            var path = AssetDatabase.GetAssetPath(prefab);
+            var path = GetAssetPath(go);
 
             if (string.IsNullOrEmpty(path))
             {
@@ -105,8 +114,8 @@ class NavMeshPrefabInstanceEditor : Editor
         {
             var instance = (NavMeshPrefabInstance)tgt;
             var go = instance.gameObject;
-            var prefab = PrefabUtility.GetPrefabInstanceHandle(go);
-            var path = AssetDatabase.GetAssetPath(prefab);
+            var path = GetAssetPath(go);
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
 
             if (string.IsNullOrEmpty(path))
             {
