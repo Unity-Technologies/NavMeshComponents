@@ -10,6 +10,9 @@ public class NavMeshSourceTag : MonoBehaviour
     // Global containers for all active mesh/terrain tags
     public static List<MeshFilter> m_Meshes = new List<MeshFilter>();
     public static List<Terrain> m_Terrains = new List<Terrain>();
+    public static List<int> m_Areas = new List<int>();
+
+    [SerializeField] private string areaName = "Walkable";
 
     void OnEnable()
     {
@@ -17,12 +20,14 @@ public class NavMeshSourceTag : MonoBehaviour
         if (m != null)
         {
             m_Meshes.Add(m);
+            m_Areas.Add(NavMesh.GetAreaFromName(areaName));
         }
 
         var t = GetComponent<Terrain>();
         if (t != null)
         {
             m_Terrains.Add(t);
+            m_Areas.Add(NavMesh.GetAreaFromName(areaName));
         }
     }
 
@@ -58,7 +63,7 @@ public class NavMeshSourceTag : MonoBehaviour
             s.shape = NavMeshBuildSourceShape.Mesh;
             s.sourceObject = m;
             s.transform = mf.transform.localToWorldMatrix;
-            s.area = 0;
+            s.area = m_Areas[i];
             sources.Add(s);
         }
 
@@ -72,7 +77,7 @@ public class NavMeshSourceTag : MonoBehaviour
             s.sourceObject = t.terrainData;
             // Terrain system only supports translation - so we pass translation only to back-end
             s.transform = Matrix4x4.TRS(t.transform.position, Quaternion.identity, Vector3.one);
-            s.area = 0;
+            s.area = m_Areas[i];
             sources.Add(s);
         }
     }
