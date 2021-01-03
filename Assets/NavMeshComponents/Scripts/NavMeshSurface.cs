@@ -341,10 +341,11 @@ namespace UnityEngine.AI
             }
 
             if (m_IgnoreNavMeshAgent)
-                sources.RemoveAll((x) => (x.component != null && x.component.gameObject.GetComponent<NavMeshAgent>() != null));
+				sources.RemoveAll((x) => x.component != null && x.component is NavMeshAgent);
 
-            if (m_IgnoreNavMeshObstacle)
-                sources.RemoveAll((x) => (x.component != null && x.component.gameObject.GetComponent<NavMeshObstacle>() != null));
+			if (m_IgnoreNavMeshObstacle)
+				sources.RemoveAll((x) => x.component != null && x.component is NavMeshObstacle);
+
 
             AppendModifierVolumes(ref sources);
 
