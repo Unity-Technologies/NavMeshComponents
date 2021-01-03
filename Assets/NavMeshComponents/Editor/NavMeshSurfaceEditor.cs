@@ -27,6 +27,7 @@ namespace UnityEditor.AI
         SerializedProperty m_Size;
         SerializedProperty m_TileSize;
         SerializedProperty m_UseGeometry;
+        SerializedProperty m_IgnoreTriggerColliders;
         SerializedProperty m_VoxelSize;
 
 #if NAVMESHCOMPONENTS_SHOW_NAVMESHDATA_REF
@@ -73,6 +74,7 @@ namespace UnityEditor.AI
             m_Size = serializedObject.FindProperty("m_Size");
             m_TileSize = serializedObject.FindProperty("m_TileSize");
             m_UseGeometry = serializedObject.FindProperty("m_UseGeometry");
+            m_IgnoreTriggerColliders = serializedObject.FindProperty("m_IgnoreTriggerColliders");
             m_VoxelSize = serializedObject.FindProperty("m_VoxelSize");
 
 #if NAVMESHCOMPONENTS_SHOW_NAVMESHDATA_REF
@@ -132,6 +134,12 @@ namespace UnityEditor.AI
 
             EditorGUILayout.PropertyField(m_LayerMask, s_Styles.m_LayerMask);
             EditorGUILayout.PropertyField(m_UseGeometry);
+            if ((NavMeshCollectGeometry)m_UseGeometry.enumValueIndex == NavMeshCollectGeometry.PhysicsColliders)
+            {
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(m_IgnoreTriggerColliders);
+                EditorGUI.indentLevel--;
+            }
 
             EditorGUILayout.Space();
 
