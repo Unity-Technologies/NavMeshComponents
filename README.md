@@ -60,4 +60,4 @@ A: They're not supported in the new NavMesh building feature. HeightMesh will be
 
 # Notice on the Change of License
 
-Starting with 2020-12-08 the content of this package is [licensed](LICENSE.md) under the [Unity Companion License](https://unity3d.com/legal/licenses/unity_companion_license) for Unity-dependent projects. All content that was accessed under the old MIT license remains under that license.
+With effect from 8th December 2020 this package is [licensed](LICENSE.md) under the [Unity Companion License](https://unity3d.com/legal/licenses/unity_companion_license) for Unity-dependent projects. Prior to the 8th December 2020 this package was licensed under MIT and all use of the package content prior to 8th December 2020 is licensed under MIT.
