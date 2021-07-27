@@ -1,7 +1,22 @@
-> Please use the branch matching the version of your Unity editor: [master](../../tree/master) for the latest released LTS version and up to 2020.2, [2019.3](../../tree/2019.3) for up to 2019.4-LTS, [2018.3](../../tree/2018.3) for up to 2018.4-LTS and 2019.2, [2018.2](../../tree/2018.2), [2018.1](../../tree/2018.1), [2017.2](../../tree/2017.2) for up to 2017.4-LTS, [2017.1](../../tree/2017.1), [5.6](../../tree/5.6).\
-> You can use the [package](../../tree/package) branch in Unity 2019.4 or newer in order to add this code to a project in the form of a package. For instructions please refer to the [Setup](../../tree/package#setup) section of the README file.
+# Status of the project
 
-# Components for Runtime NavMesh Building
+## Development
+This project is now developed as part of the [AI Navigation](https://docs.unity3d.com/Packages/com.unity.ai.navigation@latest) package. Please add that package to your project in order to continue building the NavMesh using these components and to get access to newer versions.
+
+The content of this repository remains available for older Unity versions but no further development will be made here.
+
+## Questions and feature requests
+Please use the [AI & Navigation Previews](https://forum.unity.com/forums/ai-navigation-previews.122/) section of the forum to discuss about the **AI Navigation** package and to stay informed about major releases.
+
+You can learn about the future developments of **AI Navigation** and also share your feature requests in the [Unity Platform Roadmap](https://unity.com/roadmap/unity-platform/navigation-game-ai) portal.
+
+## Bug Reporting
+The _Issues_ section of this repository is closed. Please use the [Unity built-in report system](https://unity3d.com/unity/qa/bug-reporting 
+) to report any bugs that you find in the **AI Navigation** package.
+
+# Using This Repository
+
+## Components for Runtime NavMesh Building
 
 Here we introduce four components for the navigation system:
 
@@ -14,12 +29,15 @@ These components comprise the high level controls for building and using NavMesh
 
 Detailed information can be found in the [Documentation](Documentation) section or in the [NavMesh building components](https://docs.unity3d.com/Manual/NavMesh-BuildingComponents.html) section of the Unity Manual.
 
-# How To Get Started
+## How To Get Started
 
 Download and install Unity 5.6 or newer.
 
 Clone or download this repository and open the project in Unity.
-Alternatively, you can copy the contents of `Assets/NavMeshComponents` to an existing project. Make sure to select a branch of the repository that matches the Unity version.
+Alternatively, you can copy the contents of `Assets/NavMeshComponents` to an existing project.
+
+Make sure to select a branch of the repository that matches the Unity version:
+> [master](../../tree/master) for 2020.3-LTS, [2019.3](../../tree/2019.3) for up to 2019.4-LTS, [2018.3](../../tree/2018.3) for up to 2018.4-LTS and 2019.2, [2018.2](../../tree/2018.2), [2018.1](../../tree/2018.1), [2017.2](../../tree/2017.2) for up to 2017.4-LTS, [2017.1](../../tree/2017.1), [5.6](../../tree/5.6).
 
 Additional examples are available in the `Assets/Examples` folder.
 The examples are provided "as is". They are neither generic nor robust, but serve as inspiration.
@@ -27,7 +45,7 @@ The examples are provided "as is". They are neither generic nor robust, but serv
 _Note: During the beta cycle features and API are subject to change.\
 **Make sure to backup an existing project before opening it with a beta build.**_
 
-# FAQ
+## FAQ
 
 Q: Can I bake a NavMesh at runtime?  
 A: Yes.
