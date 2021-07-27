@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -340,6 +341,15 @@ namespace UnityEngine.AI
                 }
             }
 
+            for (int i = 0; i < sources.Count; i++)
+            {
+                TerrainData terrain;
+                if (sources[i].sourceObject.TryCast(out terrain))
+                {
+                    CollectTrees(sources[i].component, terrain, sources[i].transform, m_LayerMask, 1, sources);
+                }
+            }
+
             if (m_IgnoreNavMeshAgent)
                 sources.RemoveAll((x) => (x.component != null && x.component.gameObject.GetComponent<NavMeshAgent>() != null));
 
@@ -349,6 +359,94 @@ namespace UnityEngine.AI
             AppendModifierVolumes(ref sources);
 
             return sources;
+        }
+
+        private static void CollectTrees(Component owner, TerrainData terrain, Matrix4x4 transform, int layerMask, int area, List<NavMeshBuildSource> sources)
+        {
+            var size = terrain.size;
+
+            foreach (var tree in terrain.treeInstances)
+            {
+                var proto = terrain.treePrototypes[tree.prototypeIndex].prefab;
+                var pos = Vector3.Scale(tree.position, size);
+                var rot = Quaternion.AngleAxis(Mathf.Rad2Deg * tree.rotation, Vector3.up);
+                var scale = new Vector3(tree.widthScale, tree.heightScale, tree.widthScale);
+                scale = Vector3.one;
+                var treeLocal = Matrix4x4.TRS(pos, rot, scale);
+
+                foreach (var collider in proto.GetComponentsInChildren<Collider>())
+                {
+                    // Take into account layer mask
+                    if (((1 << collider.gameObject.layer) & layerMask) != 0)
+                    {
+                        Matrix4x4 colliderMatrix = proto.transform.worldToLocalMatrix * collider.transform.localToWorldMatrix;
+
+                        NavMeshBuildSource src = new NavMeshBuildSource();
+                        src.area = area;
+                        src.component = owner;
+                        src.sourceObject = null;
+                        if (SetCollider(collider, transform * treeLocal * colliderMatrix, ref src))
+                        {
+                            sources.Add(src);
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool SetCollider(Collider collider, Matrix4x4 transform, ref NavMeshBuildSource source)
+        {
+            BoxCollider box;
+            SphereCollider sphere;
+            CapsuleCollider capsule;
+            MeshCollider mesh;
+            if (collider.TryCast(out sphere))
+            {
+                // Size is supposed to be radius, but it's actually diameter
+                source.shape = NavMeshBuildSourceShape.Sphere;
+                source.size = sphere.radius * 2 * Vector3.one;
+                source.transform = transform * Matrix4x4.Translate(sphere.center);
+                return true;
+            }
+            else if (collider.TryCast(out capsule))
+            {
+                // Capsule is expected to be in y-axis
+                var rot = Matrix4x4.identity;
+                if (capsule.direction == 0)
+                {
+                    rot = Matrix4x4.Rotate(Quaternion.AngleAxis(90, Vector3.forward));
+                }
+                else if (capsule.direction == 2)
+                {
+                    rot = Matrix4x4.Rotate(Quaternion.AngleAxis(90, Vector3.right));
+                }
+
+                // Size is supposed to be (radius, height, radius), but it's actually diameter instead of radius
+                source.shape = NavMeshBuildSourceShape.Capsule;
+                source.size = new Vector3(capsule.radius * 2, capsule.height, capsule.radius * 2);
+                source.transform = transform * Matrix4x4.Translate(capsule.center) * rot;
+                return true;
+            }
+            else if (collider.TryCast(out box))
+            {
+                source.shape = NavMeshBuildSourceShape.Box;
+                source.size = box.size;
+                source.transform = transform * Matrix4x4.Translate(box.center);
+                return true;
+            }
+            else if (collider.TryCast(out mesh))
+            {
+                source.shape = NavMeshBuildSourceShape.Mesh;
+                source.size = Vector3.one;
+                source.transform = transform;
+                source.sourceObject = mesh.sharedMesh;
+                return true;
+            }
+            else
+            {
+                Debug.LogWarning("NavMeshSource tree collider not supported: " + collider.GetType().Name);
+                return false;
+            }
         }
 
         static Vector3 Abs(Vector3 v)
@@ -378,18 +476,18 @@ namespace UnityEngine.AI
                 switch (src.shape)
                 {
                     case NavMeshBuildSourceShape.Mesh:
-                    {
-                        var m = src.sourceObject as Mesh;
-                        result.Encapsulate(GetWorldBounds(worldToLocal * src.transform, m.bounds));
-                        break;
-                    }
+                        {
+                            var m = src.sourceObject as Mesh;
+                            result.Encapsulate(GetWorldBounds(worldToLocal * src.transform, m.bounds));
+                            break;
+                        }
                     case NavMeshBuildSourceShape.Terrain:
-                    {
-                        // Terrain pivot is lower/left corner - shift bounds accordingly
-                        var t = src.sourceObject as TerrainData;
-                        result.Encapsulate(GetWorldBounds(worldToLocal * src.transform, new Bounds(0.5f * t.size, t.size)));
-                        break;
-                    }
+                        {
+                            // Terrain pivot is lower/left corner - shift bounds accordingly
+                            var t = src.sourceObject as TerrainData;
+                            result.Encapsulate(GetWorldBounds(worldToLocal * src.transform, new Bounds(0.5f * t.size, t.size)));
+                            break;
+                        }
                     case NavMeshBuildSourceShape.Box:
                     case NavMeshBuildSourceShape.Sphere:
                     case NavMeshBuildSourceShape.Capsule:
