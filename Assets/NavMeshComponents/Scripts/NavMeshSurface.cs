@@ -56,6 +56,10 @@ namespace UnityEngine.AI
         public bool ignoreNavMeshObstacle { get { return m_IgnoreNavMeshObstacle; } set { m_IgnoreNavMeshObstacle = value; } }
 
         [SerializeField]
+        bool m_IgnoreTriggerColliders = false;
+        public bool ignoreTriggerColliders { get { return m_IgnoreTriggerColliders; } set { m_IgnoreTriggerColliders = value; } }
+
+        [SerializeField]
         bool m_OverrideTileSize;
         public bool overrideTileSize { get { return m_OverrideTileSize; } set { m_OverrideTileSize = value; } }
         [SerializeField]
@@ -345,6 +349,9 @@ namespace UnityEngine.AI
 
             if (m_IgnoreNavMeshObstacle)
                 sources.RemoveAll((x) => (x.component != null && x.component.gameObject.GetComponent<NavMeshObstacle>() != null));
+
+            if (m_UseGeometry == NavMeshCollectGeometry.PhysicsColliders && m_IgnoreTriggerColliders)
+                sources.RemoveAll((x) => (x.component != null && x.component.gameObject.TryGetComponent(out Collider col) && col.isTrigger));
 
             AppendModifierVolumes(ref sources);
 
