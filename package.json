@@ -1,0 +1,30 @@
+{
+  "name": "com.unity.navmeshcomponents",
+  "displayName": "NavMesh Components",
+  "description": "Components for Runtime NavMesh Building.",
+  "version": "2021.2",
+  "unity": "2021.3.2f1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HartMagic/NavMeshComponents.git"
+  },
+  "contributors": "Vorontcov Gleb <vorontcovgleb@yandex.ru> (https://github.com/HartMagic)",
+  "dependencies": {},
+  "keywords": [
+    "navmesh",
+    "components"
+  ],
+  "samples": [
+    {
+      "displayName": "Examples",
+      "description": "Examples",
+      "path": "Assets/Examples"
+    },
+    {
+      "displayName": "Tests",
+      "description": "Tests",
+      "path": "Assets/Tests"
+    }
+  ]
+}
