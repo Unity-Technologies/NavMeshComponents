@@ -6,7 +6,6 @@ using System.IO;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.AI;
-using UnityEditor.Experimental.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.AI;
