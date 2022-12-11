@@ -54,8 +54,7 @@ public class MeshTool : MonoBehaviour
             mesh.vertices = vertices;
             mesh.RecalculateBounds();
 
-            var col = filter.GetComponent<MeshCollider>();
-            if (col != null)
+            if (filter.TryGetComponent<MeshCollider>(out var col))
             {
                 var colliMesh = new Mesh();
                 colliMesh.vertices = mesh.vertices;
