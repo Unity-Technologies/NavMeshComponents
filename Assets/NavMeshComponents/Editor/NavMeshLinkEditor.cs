@@ -63,8 +63,7 @@ namespace UnityEditor.AI
             forward -= Vector3.Dot(up, forward) * up;
 
             var transform = navLink.transform;
-            transform.rotation = Quaternion.LookRotation(forward, up);
-            transform.position = (worldEndPt + worldStartPt) * 0.5f;
+            transform.SetPositionAndRotation((worldEndPt + worldStartPt) * 0.5f, Quaternion.LookRotation(forward, up));
             transform.localScale = Vector3.one;
 
             navLink.startPoint = transform.InverseTransformPoint(worldStartPt);
@@ -247,7 +246,7 @@ namespace UnityEditor.AI
             }
 
             EditorGUI.BeginChangeCheck();
-            pos = Handles.Slider(midPt + right * navLink.width * 0.5f, right, midSize * 0.03f, Handles.DotHandleCap, 0);
+            pos = Handles.Slider(midPt + 0.5f * navLink.width * right, right, midSize * 0.03f, Handles.DotHandleCap, 0);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(navLink, "Adjust link width");
@@ -255,7 +254,7 @@ namespace UnityEditor.AI
             }
 
             EditorGUI.BeginChangeCheck();
-            pos = Handles.Slider(midPt - right * navLink.width * 0.5f, -right, midSize * 0.03f, Handles.DotHandleCap, 0);
+            pos = Handles.Slider(midPt - 0.5f * navLink.width * right, -right, midSize * 0.03f, Handles.DotHandleCap, 0);
             if (EditorGUI.EndChangeCheck())
             {
                 Undo.RecordObject(navLink, "Adjust link width");

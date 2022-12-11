@@ -15,7 +15,7 @@ public class Oscillator : MonoBehaviour
 
     void Update()
     {
-        var pos = m_StartPosition + m_Direction * m_Amplitude * Mathf.Sin(2.0f * Mathf.PI * Time.time / m_Period);
+        var pos = m_StartPosition + m_Amplitude * Mathf.Sin(2.0f * Mathf.PI * Time.time / m_Period) * m_Direction;
         transform.position = pos;
     }
 }
