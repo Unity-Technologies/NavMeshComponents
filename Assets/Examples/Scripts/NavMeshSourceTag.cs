@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NavMeshSourceTagWithAreas : MonoBehaviour
+public class NavMeshSourceTag : MonoBehaviour
 {
 	public static List<Tuple<MeshFilter, int>> m_Meshes =
 	    new List<Tuple<MeshFilter, int>>();
@@ -12,7 +12,7 @@ public class NavMeshSourceTagWithAreas : MonoBehaviour
 	    new List<Tuple<Terrain, int>>();
 
 	[SerializeField]
-	public int areaNum = -1;
+	public int areaNum = -1; //Set to zero for default
 
 	void OnEnable()
 	{
@@ -20,6 +20,8 @@ public class NavMeshSourceTagWithAreas : MonoBehaviour
 		addToList();
 	}
 	
+	//This is not the best way to do this, as you can easily call this multiple times are mess things up
+	//TODO refractor this to avoid multiple adds
 	public void addToList()
 	{
 		var m = GetComponent<MeshFilter>();
